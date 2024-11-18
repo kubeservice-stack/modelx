@@ -16,7 +16,7 @@ type DescriptorWithContent struct {
 	GetContent func() (io.ReadSeekCloser, error)
 }
 
-var tgz = archiver.CompressedArchive{
+var tgz = archiver.Archive{
 	Archival:    archiver.Tar{},
 	Compression: archiver.Gz{},
 }
@@ -53,7 +53,7 @@ func TGZ(ctx context.Context, dir string, intofile string) (digest.Digest, error
 }
 
 func UnTGZ(ctx context.Context, intodir string, readercloser io.Reader) error {
-	return tgz.Extract(ctx, readercloser, nil, func(ctx context.Context, f archiver.File) error {
+	return tgz.Extract(ctx, readercloser, func(ctx context.Context, f archiver.FileInfo) error {
 		nameinlocal := filepath.Join(intodir, f.NameInArchive)
 		if f.IsDir() {
 			return os.MkdirAll(nameinlocal, f.Mode())

@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/aws/smithy-go/ptr"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
@@ -158,7 +160,7 @@ func (s *S3RegistryStore) completeMultipartUpload(ctx context.Context, path stri
 	if desiresieze > 0 {
 		var size int64
 		for _, part := range listpartsOutput.Parts {
-			size += part.Size
+			size += *part.Size
 		}
 		if size != desiresieze {
 			return fmt.Errorf("size mismatch: %d != %d, may be some parts are not uploaded", size, desiresieze)
@@ -284,7 +286,7 @@ func (s *S3RegistryStore) uploadLocationMultiPart(
 			Bucket:     aws.String(s.provider.Bucket),
 			Key:        s.provider.prefixedKey(path),
 			UploadId:   uploadid,
-			PartNumber: int32(partNumber), // [1,10000]
+			PartNumber: ptr.Int32(int32(partNumber)), // [1,10000]
 		}
 		req, err := s.provider.PreSign.PresignUploadPart(ctx, presignUploadPart, s3.WithPresignExpires(s.provider.Expire))
 		if err != nil {

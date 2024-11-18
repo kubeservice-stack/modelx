@@ -2,7 +2,7 @@ global:
   imageRegistry: ""
   imageRepository: ""
 image:
-  repository: kubegems/modelx
+  repository: dongjiang1989/modelx
   tag: latest
 deployment:
   containerPorts:

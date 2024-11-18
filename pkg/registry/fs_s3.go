@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aws/smithy-go/ptr"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
@@ -84,7 +86,7 @@ func (m *S3StorageProvider) Put(ctx context.Context, path string, content BlobCo
 		Bucket:        aws.String(m.Bucket),
 		Key:           m.prefixedKey(path),
 		Body:          content.Content,
-		ContentLength: int64(content.ContentLength),
+		ContentLength: ptr.Int64(int64(content.ContentLength)),
 		ContentType:   aws.String(content.ContentType),
 	}
 	if _, err := manager.NewUploader(m.Client).Upload(ctx, uploadobj); err != nil {
@@ -144,7 +146,7 @@ func (m *S3StorageProvider) Get(ctx context.Context, path string) (*BlobContent,
 	return &BlobContent{
 		Content:       getobjout.Body,
 		ContentType:   StringDeref(getobjout.ContentType, ""),
-		ContentLength: getobjout.ContentLength,
+		ContentLength: *getobjout.ContentLength,
 	}, nil
 }
 
@@ -175,7 +177,7 @@ func (m *S3StorageProvider) Stat(ctx context.Context, path string) (FsObjectMeta
 	}
 	return FsObjectMeta{
 		Name:         path,
-		Size:         headobjout.ContentLength,
+		Size:         *headobjout.ContentLength,
 		LastModified: TimeDeref(headobjout.LastModified, time.Time{}),
 		ContentType:  StringDeref(headobjout.ContentType, ""),
 	}, nil
@@ -201,11 +203,11 @@ func (m *S3StorageProvider) List(ctx context.Context, path string, recursive boo
 	for _, obj := range listobjout.Contents {
 		result = append(result, FsObjectMeta{
 			Name:         strings.TrimPrefix(*obj.Key, prefix),
-			Size:         obj.Size,
+			Size:         *obj.Size,
 			LastModified: *obj.LastModified,
 		})
 	}
-	for listobjout.IsTruncated {
+	for *listobjout.IsTruncated {
 		listinput.Marker = listobjout.NextMarker
 		listobjout, err = m.Client.ListObjects(ctx, listinput)
 		if err != nil {
@@ -214,7 +216,7 @@ func (m *S3StorageProvider) List(ctx context.Context, path string, recursive boo
 		for _, obj := range listobjout.Contents {
 			result = append(result, FsObjectMeta{
 				Name:         strings.TrimPrefix(*obj.Key, prefix),
-				Size:         obj.Size,
+				Size:         *obj.Size,
 				LastModified: *obj.LastModified,
 			})
 		}
