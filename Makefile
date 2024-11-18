@@ -20,8 +20,8 @@ ifeq (${IMAGE_TAG},main)
    IMAGE_TAG = latest
 endif
 # Image URL to use all building/pushing image targets
-IMG ?=  ${IMAGE_REGISTRY}/kubegems/modelx:$(IMAGE_TAG)
-DLIMG ?=  ${IMAGE_REGISTRY}/kubegems/modelxdl:$(IMAGE_TAG)
+IMG ?=  ${IMAGE_REGISTRY}/dongjiang1989/modelx:$(IMAGE_TAG)
+DLIMG ?=  ${IMAGE_REGISTRY}/dongjiang1989/modelxdl:$(IMAGE_TAG)
 
 GOPACKAGE=$(shell go list -m)
 ldflags+=-w -s
