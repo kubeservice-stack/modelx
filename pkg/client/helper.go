@@ -19,6 +19,7 @@ type DescriptorWithContent struct {
 var tgz = archiver.Archive{
 	Archival:    archiver.Tar{},
 	Compression: archiver.Gz{},
+	Extraction:  archiver.Tar{},
 }
 
 func TGZ(ctx context.Context, dir string, intofile string) (digest.Digest, error) {

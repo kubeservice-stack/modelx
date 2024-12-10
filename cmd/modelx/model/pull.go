@@ -17,15 +17,15 @@ func NewPullCmd() *cobra.Command {
 		Example: `
 	# Pull project/demo version latest to dirctory demo by default
 
-  		modex pull  https://myrepo/project/demo
+  		modelx pull  https://myrepo/project/demo
 
 	# Pull project/demo to current dirctoty
 
-		modex pull  https://myrepo/project/demo@version .
+		modelx pull  https://myrepo/project/demo@version .
 		
 	# Pull project/demo to dirctoty abc
 
-		modex pull  https://myrepo/project/demo@version abc
+		modelx pull  https://myrepo/project/demo@version abc
 
 		`,
 		SilenceUsage: true,

@@ -29,8 +29,11 @@ func NewDLCmd() *cobra.Command {
 		Short:   "modelx storage initalizer for seldon",
 		Version: version.Get().String(),
 		Example: `
-		modelxdl modelx://127.0.0.1:8080/library/model@v1 /mnt/model
-		modelxdl modelx://127.0.0.1:8080/library/model@v1?token=<token> /mnt/model
+		# Just for NO-Auth environment
+		modelxdl http://127.0.0.1:8080/library/model@v1 /mnt/model
+		
+		# Authorizations config from environment variable MODELX_AUTH
+		modelxdl http://127.0.0.1:8080/library/model@v1?token=<token> /mnt/model
 		`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 2 {

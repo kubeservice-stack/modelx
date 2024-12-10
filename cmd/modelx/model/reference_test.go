@@ -17,7 +17,7 @@ func TestParseReference(t *testing.T) {
 			raw:  "https://registry.example.com/repository@sha256:abcdef",
 			want: Reference{
 				Registry:   "https://registry.example.com",
-				Repository: "repository",
+				Repository: "library/repository",
 				Version:    "sha256:abcdef",
 			},
 		},
@@ -33,7 +33,7 @@ func TestParseReference(t *testing.T) {
 			raw: "https://registry.example.com/repo/name",
 			want: Reference{
 				Registry:   "https://registry.example.com",
-				Repository: "repository/name",
+				Repository: "repo/name",
 				Version:    "latest",
 			},
 		},

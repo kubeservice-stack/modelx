@@ -25,19 +25,19 @@ func NewListCmd() *cobra.Command {
 		Example: `
 	# List all projects of repo
 
-  		modex list  myrepo
+  		modelx list  myrepo
 
 	# List all projects of repo filter by keyword
 
-		modex list  myrepo --search "gpt"
+		modelx list  myrepo --search "gpt"
 
 	# List all versions
 
-		modex list  myrepo/project/demo [--serach=v1.*]
+		modelx list  myrepo/project/demo [--serach=v1.*]
 
 	# List all files of cerrtain version
 
-  		modex list  myrepo/project/demo@v1.0
+  		modelx list  myrepo/project/demo@v1.0
 		`,
 		Version: version.Get().String(),
 		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

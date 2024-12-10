@@ -41,8 +41,12 @@ func (c Client) Pull(ctx context.Context, repo string, version string, into stri
 func (c Client) PullBlobs(ctx context.Context, repo string, basedir string, blobs []types.Descriptor) error {
 	mb, ctx := progress.NewMuiltiBarContext(ctx, os.Stdout, 60, PullPushConcurrency)
 	for _, blob := range blobs {
-		blob := blob
 		mb.Go(blob.Name, "pending", func(b *progress.Bar) error {
+			if blob.MediaType == MediaTypeModelDirectoryTarGz {
+				if err := os.MkdirAll(filepath.Join(basedir, blob.Name), 0o755); err != nil {
+					return fmt.Errorf("create directory %s: %v", filepath.Join(basedir, blob.Name), err)
+				}
+			}
 			return c.pullBlobProgress(ctx, repo, blob, basedir, b)
 		})
 	}
@@ -171,6 +175,7 @@ func (c Client) pullDirectory(ctx context.Context, repo string, desc types.Descr
 
 		// extract
 		rf, err := os.Open(cache)
+
 		if err != nil {
 			return err
 		}

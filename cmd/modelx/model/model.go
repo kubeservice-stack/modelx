@@ -12,6 +12,8 @@ import (
 	"kubegems.io/modelx/pkg/version"
 )
 
+const ModelxDebugEnv = "MODELX_DEBUG"
+
 func NewModelxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "modelx",
@@ -29,7 +31,7 @@ func NewModelxCmd() *cobra.Command {
 
 func BaseContext() (context.Context, context.CancelFunc) {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
-	if os.Getenv("DEBUG") == "1" {
+	if os.Getenv(ModelxDebugEnv) == "1" {
 		log.SetFlags(log.LstdFlags | log.Lshortfile)
 		ctx = logr.NewContext(ctx, stdr.NewWithOptions(log.Default(), stdr.Options{LogCaller: stdr.Error}))
 	}

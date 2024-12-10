@@ -19,15 +19,15 @@ func NewPushCmd() *cobra.Command {
 		Example: `
 	# Push current directory to repo myrepo
 
-		modex push myrepo/project/demo
+		modelx push myrepo/project/demo
 
-	# Push current directory to repo myrepo as v1
+	# Push current directory to repo myrepo as v1.0.0
 			
-		modex push myrepo/project/demo@v1
+		modelx push myrepo/project/demo@v1.0.0
 
 	# Push directory abc to repo myrepo
 			
-		modlex push myrepo/project/demo@v1 abc
+		modelx push myrepo/project/demo@v1.0.0 abc
 
 		`,
 		SilenceUsage: true,

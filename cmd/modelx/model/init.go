@@ -1,6 +1,7 @@
 package model
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -17,7 +18,11 @@ func NewInitCmd() *cobra.Command {
 		Use:   "init",
 		Short: "init an new model at path",
 		Example: `
+  # modelx init local path
   modex init .
+
+  # modelx init into custom path
+  model init Llama3
 		`,
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -52,7 +57,7 @@ func InitModelx(ctx context.Context, path string, force bool) error {
 	}
 	config := ModelConfig{
 		Description: "This is a modelx model",
-		FrameWork:   "<some framework>",
+		FrameWork:   "<some framework.Pytorch|TensorFlow|Caffe|MindSpore|etc>",
 		Config: map[string]interface{}{
 			"inputs":  map[string]interface{}{},
 			"outputs": map[string]interface{}{},
@@ -68,10 +73,6 @@ func InitModelx(ctx context.Context, path string, force bool) error {
 				"nvdia": map[string]any{
 					"nvdia/gpu": "1",
 				},
-				"gpu-manager": map[string]any{
-					"tencent.com/vcuda-core":   "50",
-					"tencent.com/vcuda-memory": "25",
-				},
 			},
 		},
 		Mantainers: []string{
@@ -79,12 +80,15 @@ func InitModelx(ctx context.Context, path string, force bool) error {
 		},
 		ModelFiles: []string{},
 	}
-	configcontent, err := yaml.Marshal(config)
+	var configcontent bytes.Buffer
+	encoder := yaml.NewEncoder(&configcontent)
+	encoder.SetIndent(2)
+	err := encoder.Encode(config)
 	if err != nil {
 		return fmt.Errorf("encode model %w", err)
 	}
 	configfile := filepath.Join(path, ModelConfigFileName)
-	if err := os.WriteFile(configfile, configcontent, 0o755); err != nil {
+	if err := os.WriteFile(configfile, configcontent.Bytes(), 0o755); err != nil {
 		return fmt.Errorf("write model config:%s %w", configfile, err)
 	}
 

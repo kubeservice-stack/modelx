@@ -88,14 +88,14 @@ $ modelx list local
 | library | my-model | http://<ip>:<port>/library/my-model       |
 +---------+----------+-------------------------------------------+
 
-$ modelx list local:library/my-model
+$ modelx list local/library/my-model
 +---------+----------------------------------------------+------+
 | VERSION | URL                                          | SIZE |
 +---------+----------------------------------------------+------+
 | v1      | http://<ip>:<port>/library/my-model@v1       | 182B |
 +---------+----------------------------------------------+------+
 
-$ modelx list local:library/my-model@v1
+$ modelx list local/library/my-model@v1
 +-------------+--------+------+------------------+---------------------------+
 | FILE        | TYPE   | SIZE | DIGEST           | MODIFIED                  |
 +-------------+--------+------+------------------+---------------------------+

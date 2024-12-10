@@ -64,7 +64,7 @@ func ParseReference(raw string) (Reference, error) {
 	repository, version := "", ""
 	splits := strings.SplitN(u.Path, repo.SplitorVersion, 2)
 	if len(splits) != 2 || splits[1] == "" {
-		version = ""
+		version = "latest"
 	} else {
 		version = splits[1]
 	}
