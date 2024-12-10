@@ -1,3 +1,7 @@
+ARG ARCH=amd64
+ARG OS=linux
+ARG CGO_ENABLED=0
+
 # Build the manager binary
 FROM golang:1.23 AS builder
 
@@ -6,8 +10,8 @@ WORKDIR /workspace
 # Copy source files
 COPY . .
 
-ARG ARCH=amd64
-ARG OS=linux
+ARG ARCH=${ARCH}
+ARG OS=${OS}
 ARG CGO_ENABLED=0
 
 # Build
@@ -16,8 +20,8 @@ RUN make build
 
 FROM alpine
 
-ARG ARCH=amd64
-ARG OS=linux
+ARG ARCH=${ARCH}
+ARG OS=${OS}
 
 WORKDIR /
 COPY --from=builder /workspace/bin/modelxd-${OS}-${ARCH} /bin/modelxd
