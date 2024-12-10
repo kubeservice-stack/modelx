@@ -16,6 +16,9 @@ RUN make build
 
 FROM alpine
 
+ARG ARCH=amd64
+ARG OS=linux
+
 WORKDIR /
 COPY --from=builder /workspace/bin/modelxd-${OS}-${ARCH} /bin/modelxd
 COPY --from=builder /workspace/bin/modelx-${OS}-${ARCH} /bin/modelx

@@ -16,6 +16,9 @@ RUN make build
 
 FROM alpine
 
+ARG ARCH=amd64
+ARG OS=linux
+
 WORKDIR /
 COPY --from=builder /workspace/bin/modelxdl-${OS}-${ARCH} /bin/modelxdl
 
