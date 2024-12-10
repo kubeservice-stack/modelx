@@ -37,7 +37,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
       # Build binary
       - name: Build
-        run: make all
+        run: make build-all
         env:
           PUSH: ${{ github.event_name != 'pull_request' }}
       - name: Release

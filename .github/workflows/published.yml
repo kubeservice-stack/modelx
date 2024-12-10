@@ -27,12 +27,12 @@ jobs:
             name: modeld
             image: kubeservice-stack/modeld
             file: ./Dockerfile
-            platforms: linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x
+            platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
           -
             name: modeldl
             image: kubeservice-stack/modeldl
             file: ./Dockerfile.dl
-            platforms: linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x
+            platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
 
     steps:
       - name: Checkout
