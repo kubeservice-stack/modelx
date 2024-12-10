@@ -16,8 +16,8 @@ RUN make build
 FROM alpine
 
 WORKDIR /
-COPY --from=builder /workspace/bin/modelxd /bin/modelxd
-COPY --from=builder /workspace/bin/modelx /bin/modelx
+COPY --from=builder /workspace/bin/modelxd-${OS}-${ARCH} /bin/modelxd
+COPY --from=builder /workspace/bin/modelx-${OS}-${ARCH} /bin/modelx
 
 USER nobody:nobody
 
