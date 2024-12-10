@@ -17,17 +17,11 @@ ARG CGO_ENABLED=0
 # Build
 RUN make build
 
-ARG ARCH=amd64
-ARG OS=linux
-
 FROM alpine
 
-ARG ARCH=${ARCH}
-ARG OS=${OS}
-
 WORKDIR /
-COPY --from=builder /workspace/bin/modelxd-${OS}-${ARCH} /bin/modelxd
-COPY --from=builder /workspace/bin/modelx-${OS}-${ARCH} /bin/modelx
+COPY --from=builder /workspace/bin/modelxd-${GOOS}-${GOARCH} /bin/modelxd
+COPY --from=builder /workspace/bin/modelx-${GOOS}-${GOARCH} /bin/modelx
 
 USER nobody:nobody
 
