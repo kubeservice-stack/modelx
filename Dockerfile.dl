@@ -26,7 +26,7 @@ ARG ARCH=${ARCH}
 ARG OS=${OS}
 
 WORKDIR /
-COPY --from=builder /workspace/bin/modelxdl/bin/modelxdl
+COPY --from=builder /workspace/bin/modelxdl /bin/modelxdl
 
 USER nobody:nobody
 
