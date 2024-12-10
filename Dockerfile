@@ -17,6 +17,8 @@ ARG CGO_ENABLED=0
 # Build
 RUN make build
 
+ARG ARCH=amd64
+ARG OS=linux
 
 FROM alpine
 
