@@ -28,7 +28,7 @@ jobs:
             image: kubeservice-stack/modeld
             file: ./Dockerfile
             platforms: linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x
-           -
+          -
             name: modeldl
             image: kubeservice-stack/modeldl
             file: ./Dockerfile.dl
@@ -66,7 +66,7 @@ jobs:
       - name: Cosign login
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | cosign login -u ${{ github.repository_owner }} --password-stdin ghcr.io
-      - name: 
+      - name: Build Binary
         run: |
           make build-all
       - name: Build images and push
