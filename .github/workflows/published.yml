@@ -68,7 +68,7 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | cosign login -u ${{ github.repository_owner }} --password-stdin ghcr.io
       - name: Build Binary
         run: |
-          make build-all
+          make build
       - name: Build images and push
         uses: docker/build-push-action@v3
         with:
