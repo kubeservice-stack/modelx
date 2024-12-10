@@ -69,6 +69,8 @@ OS:=$(shell go env GOOS)
 ARCH:=$(shell go env GOARCH)
 build: preset ## Build binaries.
 	$(call build,${OS},${ARCH})
+	@cp ${BIN_DIR}/modeld-${OS}-${ARCH} ${BIN_DIR}/modeld
+	@cp ${BIN_DIR}/modeldl-${OS}-${ARCH} ${BIN_DIR}/modeldl
 	@cp ${BIN_DIR}/modelx-${OS}-${ARCH} ${BIN_DIR}/modelx
 
 build-all: preset

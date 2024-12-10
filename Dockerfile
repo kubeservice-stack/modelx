@@ -1,8 +1,30 @@
-# syntax=docker/dockerfile:1
+ARG ARCH=amd64
+ARG OS=linux
+ARG CGO_ENABLED=0
+# Build the manager binary
+FROM golang:1.23 AS builder
+
+WORKDIR /workspace
+
+# Copy source files
+COPY . .
+
+# Build
+RUN make build
+
+
 FROM alpine
-# TARGETOS TARGETARCH already set by '--platform'
-ARG TARGETOS TARGETARCH
-COPY modelxd-${TARGETOS}-${TARGETARCH} /bin/modelxd
-COPY modelx-${TARGETOS}-${TARGETARCH} /bin/modelx
+
+WORKDIR /
+COPY --from=builder /workspace/bin/modelxd /bin/modelxd
+COPY --from=builder /workspace/bin/modelx /bin/modelx
+
+USER nobody:nobody
+
+LABEL org.opencontainers.image.source="https://github.com/kubeservice-stack/modelx" \
+    org.opencontainers.image.url="https://stack.kubeservice.cn/" \
+    org.opencontainers.image.documentation="https://stack.kubeservice.cn/" \
+    org.opencontainers.image.licenses="Apache-2.0"
+    
 WORKDIR /app
 ENTRYPOINT ["/bin/modelxd"]
