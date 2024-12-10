@@ -41,7 +41,7 @@ $ modelx completion fish | source
 $ modelx completion fish > ~/.config/fish/completions/modelx.fish
 `,
 	DisableFlagsInUseLine: true,
-	ValidArgs:             []string{"bash", "zsh", "fish", "powershelxl"},
+	ValidArgs:             []string{"bash", "zsh", "fish", "powershell"},
 	Args:                  cobra.ExactValidArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		switch args[0] {
