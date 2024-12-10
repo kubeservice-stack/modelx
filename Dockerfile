@@ -10,7 +10,7 @@ WORKDIR /workspace
 COPY . .
 
 # Build
-RUN make build
+RUN ARCH=${ARCH} OS=${OS} make build
 
 
 FROM alpine

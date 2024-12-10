@@ -17,7 +17,6 @@ FROM alpine
 
 WORKDIR /
 COPY --from=builder /workspace/bin/modelxdl-${OS}-${ARCH} /bin/modelxdl
-COPY --from=builder /workspace/bin/modelx-${OS}-${ARCH} /bin/modelx
 
 USER nobody:nobody
 

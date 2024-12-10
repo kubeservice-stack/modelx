@@ -4,6 +4,8 @@
 SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
 
+OS:=$(shell go env GOOS)
+ARCH:=$(shell go env GOARCH)
 BUILD_DATE?=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 GIT_VERSION?=$(shell git describe --tags --dirty --abbrev=0 2>/dev/null || git symbolic-ref --short HEAD)
 GIT_COMMIT?=$(shell git rev-parse HEAD 2>/dev/null)
@@ -28,6 +30,7 @@ ldflags+=-w -s
 ldflags+=-X '${GOPACKAGE}/pkg/version.gitVersion=${GIT_VERSION}'
 ldflags+=-X '${GOPACKAGE}/pkg/version.gitCommit=${GIT_COMMIT}'
 ldflags+=-X '${GOPACKAGE}/pkg/version.buildDate=${BUILD_DATE}'
+ldflags+=-X '${GOPACKAGE}/pkg/version.defaultVersion=${VERSION}'
 
 PUSH?=false
 
@@ -65,12 +68,10 @@ define build
 endef
 
 ##@ Build
-OS:=$(shell go env GOOS)
-ARCH:=$(shell go env GOARCH)
 build: preset ## Build binaries.
 	$(call build,${OS},${ARCH})
-	@cp ${BIN_DIR}/modeld-${OS}-${ARCH} ${BIN_DIR}/modeld
-	@cp ${BIN_DIR}/modeldl-${OS}-${ARCH} ${BIN_DIR}/modeldl
+	@cp ${BIN_DIR}/modelxd-${OS}-${ARCH} ${BIN_DIR}/modelxd
+	@cp ${BIN_DIR}/modelxdl-${OS}-${ARCH} ${BIN_DIR}/modelxdl
 	@cp ${BIN_DIR}/modelx-${OS}-${ARCH} ${BIN_DIR}/modelx
 
 build-all: preset
