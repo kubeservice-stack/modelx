@@ -4,10 +4,12 @@
 SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
 
-OS?=$(shell go env GOOS)
-ARCH?=$(shell go env GOARCH)
-ifeq ($(ARCH),arm)
+GOOS?=$(shell go env GOOS)
+GOARCH?=$(shell go env GOARCH)
+ifeq ($(GOARCH),arm)
 	ARCH=armv7
+else
+	ARCH=$(GOARCH)
 endif
 
 BUILD_DATE?=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
@@ -73,10 +75,10 @@ endef
 
 ##@ Build
 build: preset ## Build binaries.
-	$(call build,${OS},${ARCH})
-	@cp ${BIN_DIR}/modelxd-${OS}-${ARCH} ${BIN_DIR}/modelxd
-	@cp ${BIN_DIR}/modelxdl-${OS}-${ARCH} ${BIN_DIR}/modelxdl
-	@cp ${BIN_DIR}/modelx-${OS}-${ARCH} ${BIN_DIR}/modelx
+	$(call build,${GOOS},${GOARCH})
+	@cp ${BIN_DIR}/modelxd-${GOOS}-${GOARCH} ${BIN_DIR}/modelxd
+	@cp ${BIN_DIR}/modelxdl-${GOOS}-${GOARCH} ${BIN_DIR}/modelxdl
+	@cp ${BIN_DIR}/modelx-${GOOS}-${GOARCH} ${BIN_DIR}/modelx
 
 build-all: preset
 	$(call build,linux,amd64)
@@ -86,8 +88,8 @@ build-all: preset
 	$(call build,windows,amd64)
 
 image:
-	docker buildx build --platform=${OS}/${ARCH} --tag ${IMG} --push=${PUSH} -f Dockerfile ${BIN_DIR}
-	docker buildx build --platform=${OS}/${ARCH} --tag ${DLIMG} --push=${PUSH} -f Dockerfile.dl ${BIN_DIR}
+	docker buildx build --platform=${GOOS}/${GOARCH} --tag ${IMG} --push=${PUSH} -f Dockerfile ${BIN_DIR}
+	docker buildx build --platform=${GOOS}/${GOARCH} --tag ${DLIMG} --push=${PUSH} -f Dockerfile.dl ${BIN_DIR}
 
 PLATFORM?=linux/amd64,linux/arm64
 image-all: ## Build container image.
