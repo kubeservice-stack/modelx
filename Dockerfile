@@ -20,8 +20,8 @@ RUN make build
 FROM alpine
 
 WORKDIR /
-COPY --from=builder /workspace/bin/modelxd-${GOOS}-${GOARCH} /bin/modelxd
-COPY --from=builder /workspace/bin/modelx-${GOOS}-${GOARCH} /bin/modelx
+COPY --from=builder /workspace/bin/modelxd /bin/modelxd
+COPY --from=builder /workspace/bin/modelx /bin/modelx
 
 USER nobody:nobody
 
