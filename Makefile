@@ -6,6 +6,10 @@ SHELL = /usr/bin/env bash -o pipefail
 
 OS:=$(shell go env GOOS)
 ARCH:=$(shell go env GOARCH)
+ifeq ($(ARCH),arm)
+	ARCH=armv7
+endif
+
 BUILD_DATE?=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 GIT_VERSION?=$(shell git describe --tags --dirty --abbrev=0 2>/dev/null || git symbolic-ref --short HEAD)
 GIT_COMMIT?=$(shell git rev-parse HEAD 2>/dev/null)
@@ -63,7 +67,7 @@ BINARIES = modelx modelxd modelxdl
 define build
 	$(foreach n,$(subst  , , ${BINARIES}),
 		@echo "Building $(n)-${1}-${2}"
-		@GOOS=${1} GOARCH=$(2) CGO_ENABLED=0 go build -gcflags=all="-N -l" -ldflags="${ldflags}" -o ${BIN_DIR}/$(n)-$(1)-$(2) ${GOPACKAGE}/cmd/$(n)
+		@GOOS=${1} GOARCH=${2} CGO_ENABLED=0 go build -gcflags=all="-N -l" -ldflags="${ldflags}" -o ${BIN_DIR}/$(n)-$(1)-$(2) ${GOPACKAGE}/cmd/$(n)
 	)
 endef
 
