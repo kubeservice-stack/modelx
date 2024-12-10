@@ -4,8 +4,8 @@
 SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
 
-OS:=$(shell go env GOOS)
-ARCH:=$(shell go env GOARCH)
+OS?=$(shell go env GOOS)
+ARCH?=$(shell go env GOARCH)
 ifeq ($(ARCH),arm)
 	ARCH=armv7
 endif
