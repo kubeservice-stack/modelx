@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	mts "github.com/kubeservice-stack/common/pkg/metrics"
 )
 
 const (
@@ -22,6 +23,10 @@ func (s *Registry) route() http.Handler {
 	})
 	// global index
 	mux.Methods("GET").Path("/").HandlerFunc(s.GetGlobalIndex)
+
+	// metrics
+	mux.Methods("GET").Path("/metrics").Handler(mts.DefaultTallyScope.Reporter.HTTPHandler())
+
 	// repository
 	repository := mux.PathPrefix("/{name:" + NameRegexp + "}").Subrouter()
 

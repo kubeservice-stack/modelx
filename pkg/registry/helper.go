@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -97,17 +98,34 @@ func NewOIDCAuthFilter(ctx context.Context, issuer string, next http.Handler) ht
 
 func LoggingFilter(logger logr.Logger, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		addr := r.Header.Get("X-Real-IP")
+		if addr == "" {
+			addr = r.Header.Get("X-Forwarded-For")
+			if addr == "" {
+				addr = r.RemoteAddr
+			}
+		}
+
+		host := r.Host
+		if host == "" {
+			host = r.URL.Host
+		}
+		if strings.Contains(host, ":") {
+			host, _, _ = net.SplitHostPort(host)
+		}
+
 		from := time.Now()
-
 		h.ServeHTTP(w, r)
-
 		cost := time.Since(from)
+
 		logger.Info("http",
 			"method", r.Method,
 			"path", r.RequestURI,
-			"cost", cost,
+			"latency", cost,
 			"proto", r.Proto,
-			"ua", r.UserAgent(),
+			"user-agent", r.UserAgent(),
+			"addr", addr,
+			"host", host,
 		)
 	})
 }
