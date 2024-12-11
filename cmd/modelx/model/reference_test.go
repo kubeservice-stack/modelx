@@ -34,6 +34,14 @@ func TestParseReference(t *testing.T) {
 			want: Reference{
 				Registry:   "https://registry.example.com",
 				Repository: "repo/name",
+				Version:    "",
+			},
+		},
+		{
+			raw: "https://registry.example.com/repo/name@latest",
+			want: Reference{
+				Registry:   "https://registry.example.com",
+				Repository: "repo/name",
 				Version:    "latest",
 			},
 		},
