@@ -6,6 +6,7 @@ type Options struct {
 	S3             *S3Options
 	Local          *LocalFSOptions
 	EnableRedirect bool
+	EnableMetrics  bool
 	OIDC           *OIDCOptions
 }
 
@@ -21,6 +22,7 @@ func DefaultOptions() *Options {
 		OIDC:           &OIDCOptions{},
 		Local:          NewDefaultLocalFSOptions(),
 		EnableRedirect: false, // default to false
+		EnableMetrics:  true,  // default to true
 	}
 }
 

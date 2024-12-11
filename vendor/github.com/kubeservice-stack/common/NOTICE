@@ -1,0 +1,56 @@
+The following components are included in this product:
+
+lumberjack.v2
+https://gopkg.in/natefinch/lumberjack.v2
+Copyright (c) 2014 Nate Finch 
+Licensed under the MIT License (MIT)
+
+env
+https://github.com/caarlos0/env
+Copyright (c) 2015-2022 Carlos Alexandro Becker
+Licensed under the MIT License (MIT)
+
+gin
+https://github.com/gin-gonic/gin
+Copyright (c) 2014 Manuel Martínez-Almeida
+Licensed under the MIT License (MIT)
+
+go-isatty 
+https://github.com/mattn/go-isatty
+Copyright (c) Yasuhiro MATSUMOTO <mattn.jp@gmail.com>
+Licensed under the MIT License (MIT)
+
+go-version
+https://github.com/mcuadros/go-version
+Copyright (c) 2013 Máximo Cuadros
+Licensed under the MIT License (MIT)
+
+errors
+https://github.com/pkg/errors
+Copyright (c) 2015, Dave Cheney <dave@cheney.net> All rights reserved.
+Licensed under the BSD-2-Clause License (BSD-2-Clause)
+
+testify
+https://github.com/stretchr/testify
+Copyright (c) 2012-2020 Mat Ryer, Tyler Bunnell and contributors.
+Licensed under the MIT License (MIT)
+
+tally
+https://github.com/uber-go/tally
+Copyright (c) 2016 
+Licensed under the MIT License (MIT)
+
+msgpack
+https://github.com/vmihailenco/msgpack/v5
+Copyright (c) 2013 The github.com/vmihailenco/msgpack Authors.
+Licensed under the BSD-2-Clause License (BSD-2-Clause)
+
+atomic
+https://github.com/uber-go/atomic
+Copyright (c) 2016 Uber Technologies, Inc.
+Licensed under the MIT License (MIT)
+
+zap
+https://github.com/uber-go/zap
+Copyright (c) 2016-2017 Uber Technologies, Inc.
+Licensed under the MIT License (MIT)
