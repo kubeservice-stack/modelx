@@ -135,8 +135,10 @@ go-sec: $(GOSEC_BINARY) # go security
 ############
 
 .PHONY: build
-build: build-modelx build-modelxd build-modelxdl modelxd-build-image modelxdl-build-image # go build both binary and docker image
+build: build-binary modelxd-build-image modelxdl-build-image # go build both binary and docker image
 
+.PHONY: build-binary
+build-binary: build-modelx build-modelxd build-modelxdl
 .PHONY: modelxd-build-image # go build output docker image
 modelxd-build-image: GOOS := linux # Overriding GOOS value for docker image build
 modelxd-build-image: 

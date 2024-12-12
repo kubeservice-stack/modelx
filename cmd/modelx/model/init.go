@@ -115,7 +115,7 @@ func InitModelx(ctx context.Context, path string, force bool) error {
 		_, err := os.Stat(readmefile)
 		if errors.Is(err, os.ErrNotExist) {
 			readmecontent := fmt.Sprintf("# %s\n\nAwesome model descrition.\n", basefile)
-			os.WriteFile(readmefile, []byte(readmecontent), 0o755)
+			_ = os.WriteFile(readmefile, []byte(readmecontent), 0o755)
 		}
 	}
 

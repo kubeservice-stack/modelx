@@ -104,7 +104,7 @@ func (f *LocalFSProvider) Stat(ctx context.Context, path string) (FsObjectMeta, 
 func (f *LocalFSProvider) List(ctx context.Context, path string, recursive bool) ([]FsObjectMeta, error) {
 	out := []FsObjectMeta{}
 	if recursive {
-		filepath.WalkDir(iopath.Join(f.basepath, path), func(path string, d os.DirEntry, err error) error {
+		_ = filepath.WalkDir(iopath.Join(f.basepath, path), func(path string, d os.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}

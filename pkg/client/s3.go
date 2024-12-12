@@ -39,7 +39,10 @@ type S3Extension struct{}
 
 func (e S3Extension) Download(ctx context.Context, blob util.Descriptor, location util.BlobLocation, into io.Writer) error {
 	var properties S3Properties
-	convertProperties(&properties, location.Properties)
+	err := convertProperties(&properties, location.Properties)
+	if err != nil {
+		return err
+	}
 
 	if len(properties.Parts) == 0 {
 		return fmt.Errorf("no parts found")
@@ -67,8 +70,10 @@ type presignedPart struct {
 
 func (e S3Extension) Upload(ctx context.Context, blob DescriptorWithContent, location util.BlobLocation) error {
 	var properties S3Properties
-	convertProperties(&properties, location.Properties)
-
+	err := convertProperties(&properties, location.Properties)
+	if err != nil {
+		return err
+	}
 	parts := calcParts(blob.Size, len(properties.Parts))
 	for i := range parts {
 		u, err := url.Parse(properties.Parts[i].URL)

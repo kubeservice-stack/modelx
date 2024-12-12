@@ -55,7 +55,7 @@ func NewLoginCmd() *cobra.Command {
 			}
 			if token == "" {
 				fmt.Print("Token: ")
-				fmt.Scanln(&token)
+				_, _ = fmt.Scanln(&token)
 			}
 			return LoginModelx(ctx, args[0], token)
 		},

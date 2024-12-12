@@ -1,0 +1,39 @@
+run:
+  deadline: 10m
+
+linters:
+  enable:
+  - depguard
+  - testifylint
+  - unconvert
+  disable:
+  - unused
+  - revive
+  - staticcheck
+
+issues:
+  exclude-rules:
+  # Disable errcheck linter for test files.
+  - path: _test.go
+    linters:
+    - errcheck
+
+linters-settings:
+  errcheck:
+    exclude-functions:
+      # Any error in HTTP handlers is handled by the server itself.
+      - (net/http.ResponseWriter).Write
+      # Never check for logger errors.
+      - (github.com/go-kit/log.Logger).Log
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/kubeservice-stack/echo)
+      - prefix(github.com/kubeservice-stack/common)
+  depguard:
+    rules:
+      forbid-pkg-errors:
+        deny:
+        - pkg: "github.com/pkg/errors"
+          dsc: Should be replaced with standard lib errors or fmt.Errorf

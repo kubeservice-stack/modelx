@@ -82,7 +82,7 @@ func (m *S3StorageProvider) Put(ctx context.Context, path string, content BlobCo
 		Bucket:        aws.String(m.Bucket),
 		Key:           m.prefixedKey(path),
 		Body:          content.Content,
-		ContentLength: ptr.To(int64(content.ContentLength)),
+		ContentLength: ptr.To(content.ContentLength),
 		ContentType:   aws.String(content.ContentType),
 	}
 	if _, err := manager.NewUploader(m.Client).Upload(ctx, uploadobj); err != nil {
@@ -128,7 +128,6 @@ func (m *S3StorageProvider) Remove(ctx context.Context, path string, recursive b
 		})
 		return err
 	}
-	return nil
 }
 
 func (m *S3StorageProvider) Get(ctx context.Context, path string) (*BlobContent, error) {

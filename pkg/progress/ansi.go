@@ -57,7 +57,7 @@ func CPL(n uint8) []byte { return csi(n, 'F') }
 func CHA(n uint8) []byte { return csi(n, 'G') }
 
 // Cursor Position
-func CUP(row, col uint8) []byte { return append(CSI, byte(row), ';', byte(col), 'H') }
+func CUP(row, col uint8) []byte { return append(CSI, row, ';', col, 'H') }
 
 // Cursor Forward Tabulation Ps tab stops (default = 1)
 func CHT(n uint8) []byte { return csi(n, 'I') }

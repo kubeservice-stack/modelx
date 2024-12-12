@@ -389,7 +389,7 @@ func (m *FSRegistryStore) ListBlobs(ctx context.Context, repository string) ([]d
 		algo, hash := path.Split(meta.Name)
 		digests = append(digests, digest.FromString(algo+":"+hash))
 	}
-	return nil, nil
+	return digests, nil
 }
 
 func (m *FSRegistryStore) DeleteBlob(ctx context.Context, repository string, digest digest.Digest) error {
