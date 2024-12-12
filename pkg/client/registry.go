@@ -1,3 +1,19 @@
+/*
+Copyright 2024 The KubeService-Stack Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package client
 
 import (
@@ -11,12 +27,9 @@ import (
 	"strconv"
 
 	"github.com/opencontainers/go-digest"
-	"kubegems.io/modelx/pkg/errors"
-	"kubegems.io/modelx/pkg/types"
-	"kubegems.io/modelx/pkg/version"
+	"kubegems.io/modelx/pkg/response"
+	"kubegems.io/modelx/pkg/util"
 )
-
-var UserAgent = "modelx/" + version.Get().GitVersion
 
 func NewRegistryClient(addr string, auth string) *RegistryClient {
 	return &RegistryClient{
@@ -30,11 +43,11 @@ type RegistryClient struct {
 	Authorization string
 }
 
-func (t *RegistryClient) GetManifest(ctx context.Context, repository string, version string) (*types.Manifest, error) {
+func (t *RegistryClient) GetManifest(ctx context.Context, repository string, version string) (*util.Manifest, error) {
 	if version == "" {
 		version = "latest"
 	}
-	manifest := &types.Manifest{}
+	manifest := &util.Manifest{}
 	path := "/" + repository + "/manifests/" + version
 	if err := t.simplerequest(ctx, "GET", path, manifest); err != nil {
 		return nil, err
@@ -42,7 +55,7 @@ func (t *RegistryClient) GetManifest(ctx context.Context, repository string, ver
 	return manifest, nil
 }
 
-func (t *RegistryClient) PutManifest(ctx context.Context, repository string, version string, manifest types.Manifest) error {
+func (t *RegistryClient) PutManifest(ctx context.Context, repository string, version string, manifest util.Manifest) error {
 	if version == "" {
 		version = "latest"
 	}
@@ -50,8 +63,8 @@ func (t *RegistryClient) PutManifest(ctx context.Context, repository string, ver
 	return t.simpleuploadrequest(ctx, "PUT", path, manifest, nil)
 }
 
-func (t *RegistryClient) GetIndex(ctx context.Context, repository string, search string) (*types.Index, error) {
-	index := &types.Index{}
+func (t *RegistryClient) GetIndex(ctx context.Context, repository string, search string) (*util.Index, error) {
+	index := &util.Index{}
 	path := "/" + repository + "/index" + "?search=" + search
 	if err := t.simplerequest(ctx, "GET", path, index); err != nil {
 		return nil, err
@@ -59,7 +72,7 @@ func (t *RegistryClient) GetIndex(ctx context.Context, repository string, search
 	return index, nil
 }
 
-func (t *RegistryClient) GetGlobalIndex(ctx context.Context, search string) (*types.Index, error) {
+func (t *RegistryClient) GetGlobalIndex(ctx context.Context, search string) (*util.Index, error) {
 	query := url.Values{}
 	if search != "" {
 		query.Add("search", search)
@@ -68,7 +81,7 @@ func (t *RegistryClient) GetGlobalIndex(ctx context.Context, search string) (*ty
 	if len(query) > 0 {
 		path += "?" + query.Encode()
 	}
-	index := &types.Index{}
+	index := &util.Index{}
 	if err := t.simplerequest(ctx, "GET", path, index); err != nil {
 		return nil, err
 	}
@@ -89,7 +102,7 @@ func (t *RegistryClient) GetBlobContent(ctx context.Context, repository string, 
 	return t.simplerequest(ctx, "GET", path, into)
 }
 
-func (t *RegistryClient) GetBlobLocation(ctx context.Context, repository string, desc types.Descriptor, purpose string) (*types.BlobLocation, error) {
+func (t *RegistryClient) GetBlobLocation(ctx context.Context, repository string, desc util.Descriptor, purpose string) (*util.BlobLocation, error) {
 	reqpath := "/" + path.Join(repository, "blobs", desc.Digest.String(), "locations", purpose)
 	query := url.Values{}
 	query.Set("size", strconv.FormatInt(desc.Size, 10))
@@ -99,7 +112,7 @@ func (t *RegistryClient) GetBlobLocation(ctx context.Context, repository string,
 		query.Set("annotations", desc.Annotations.String())
 	}
 	reqpath += "?" + query.Encode()
-	into := &types.BlobLocation{}
+	into := &util.BlobLocation{}
 	if err := t.simplerequest(ctx, "GET", reqpath, into); err != nil {
 		return nil, err
 	}
@@ -161,7 +174,7 @@ func (t *RegistryClient) request(ctx context.Context, method, url string,
 		return nil, err
 	}
 	if resp.StatusCode >= 400 && req.Method != "HEAD" {
-		var apierr errors.ErrorInfo
+		var apierr response.ErrorInfo
 		if resp.Header.Get("Content-Type") == "application/json" {
 			if err := json.NewDecoder(resp.Body).Decode(&apierr); err != nil {
 				return nil, err

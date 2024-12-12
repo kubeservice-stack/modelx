@@ -1,0 +1,49 @@
+info:
+  contact: {}
+paths:
+  /favicon.ico:
+    get:
+      consumes:
+      - application/json
+      description: Favicon
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Favicon
+      tags:
+      - favicon
+  /healthz:
+    get:
+      consumes:
+      - application/json
+      description: Healthz
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Healthz
+      tags:
+      - healthz
+  /metrics:
+    get:
+      consumes:
+      - application/json
+      description: Metrics
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Metrics
+      tags:
+      - metrics
+swagger: "2.0"

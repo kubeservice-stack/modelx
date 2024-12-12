@@ -1,0 +1,30 @@
+ARG ARCH=amd64
+ARG OS=linux
+ARG CGO_ENABLED=0
+# Build the manager binary
+FROM golang:1.23 AS builder
+
+WORKDIR /workspace
+
+# Copy source files
+COPY . .
+
+# Build
+RUN make build-binary
+
+
+FROM alpine:latest
+
+WORKDIR /
+COPY --from=builder /workspace/bin/modelxd /bin/modelxd
+COPY --from=builder /workspace/bin/modelx /bin/modelx
+
+USER nobody:nobody
+
+LABEL org.opencontainers.image.source="https://github.com/kubeservice-stack/modelxd" \
+    org.opencontainers.image.url="https://stack.kubeservice.cn/" \
+    org.opencontainers.image.documentation="https://stack.kubeservice.cn/" \
+    org.opencontainers.image.licenses="Apache-2.0"
+    
+
+ENTRYPOINT ["/bin/modelxd"]

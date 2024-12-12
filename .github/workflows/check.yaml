@@ -1,0 +1,79 @@
+name: checks
+on:
+  pull_request:
+  push:
+    branches:
+      - 'release-*'
+      - 'master'
+      - 'main'
+    tags:
+      - 'v*'
+# To cancel running workflow when new commits pushed in a pull request
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+    name: Check Documentation formatting and links
+    steps:
+    - uses: actions/checkout@v4
+    - name: Import environment variables from file
+      run: cat ".github/env" >> $GITHUB_ENV
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '${{ env.golang-version }}'
+        check-latest: true
+    - run: make swag 
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  check-golang:
+    runs-on: ubuntu-latest
+    name: Golang linter
+    steps:
+      - uses: actions/checkout@v4
+      - name: Import environment variables from file
+        run: cat ".github/env" >> $GITHUB_ENV
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '${{ env.golang-version }}'
+          check-latest: true
+      - name: go.mod
+        run: go mod tidy && git diff --exit-code
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6.1.1
+        with:
+          version: v1.57.0
+          args: --timeout 10m0s --go ${{ env.golang-version }}
+
+  check-format:
+    runs-on: ubuntu-latest
+    name: Check format
+    steps:
+    - uses: actions/checkout@v4
+    - name: Import environment variables from file
+      run: cat ".github/env" >> $GITHUB_ENV
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '${{ env.golang-version }}'
+        check-latest: true
+    - run: make format
+
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+    name: Build binary
+    steps:
+    - uses: actions/checkout@v4
+    - name: Import environment variables from file
+      run: cat ".github/env" >> $GITHUB_ENV
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '${{ env.golang-version }}'
+        check-latest: true
+    - run: make build-binary

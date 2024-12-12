@@ -1,3 +1,19 @@
+/*
+Copyright 2024 The KubeService-Stack Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package client
 
 import (
@@ -11,12 +27,12 @@ import (
 
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/errgroup"
-	"kubegems.io/modelx/pkg/client/progress"
-	"kubegems.io/modelx/pkg/errors"
-	"kubegems.io/modelx/pkg/types"
+	"kubegems.io/modelx/pkg/progress"
+	"kubegems.io/modelx/pkg/response"
+	"kubegems.io/modelx/pkg/util"
 )
 
-func (c Client) Pull(ctx context.Context, repo string, version string, into string) error {
+func (c *Client) Pull(ctx context.Context, repo string, version string, into string) error {
 	// check if the directory exists and is empty
 	if dirInfo, err := os.Stat(into); err != nil {
 		if !os.IsNotExist(err) {
@@ -38,8 +54,8 @@ func (c Client) Pull(ctx context.Context, repo string, version string, into stri
 	return c.PullBlobs(ctx, repo, into, append(manifest.Blobs, manifest.Config))
 }
 
-func (c Client) PullBlobs(ctx context.Context, repo string, basedir string, blobs []types.Descriptor) error {
-	mb, ctx := progress.NewMuiltiBarContext(ctx, os.Stdout, 60, PullPushConcurrency)
+func (c *Client) PullBlobs(ctx context.Context, repo string, basedir string, blobs []util.Descriptor) error {
+	mb, ctx := progress.NewMuiltiBarContext(ctx, os.Stdout, 60, DefaultPullPushConcurrency)
 	for _, blob := range blobs {
 		mb.Go(blob.Name, "pending", func(b *progress.Bar) error {
 			if blob.MediaType == MediaTypeModelDirectoryTarGz {
@@ -53,7 +69,7 @@ func (c Client) PullBlobs(ctx context.Context, repo string, basedir string, blob
 	return mb.Wait()
 }
 
-func (c Client) pullBlobProgress(ctx context.Context, repo string, desc types.Descriptor, basedir string, bar *progress.Bar) error {
+func (c *Client) pullBlobProgress(ctx context.Context, repo string, desc util.Descriptor, basedir string, bar *progress.Bar) error {
 	switch desc.MediaType {
 	case MediaTypeModelDirectoryTarGz:
 		return c.pullDirectory(ctx, repo, desc, basedir, bar, true)
@@ -108,11 +124,11 @@ func WriteToFile(filename string, src io.Reader, perm os.FileMode) error {
 	return err
 }
 
-func (c Client) pullConfig(ctx context.Context, repo string, desc types.Descriptor, basedir string, bar *progress.Bar) error {
+func (c Client) pullConfig(ctx context.Context, repo string, desc util.Descriptor, basedir string, bar *progress.Bar) error {
 	return c.pullFile(ctx, repo, desc, basedir, bar)
 }
 
-func (c Client) pullFile(ctx context.Context, repo string, desc types.Descriptor, basedir string, bar *progress.Bar) error {
+func (c Client) pullFile(ctx context.Context, repo string, desc util.Descriptor, basedir string, bar *progress.Bar) error {
 	// check hash
 	bar.SetNameStatus(desc.Name, "checking", false)
 	filename := filepath.Join(basedir, desc.Name)
@@ -146,7 +162,7 @@ func (c Client) pullFile(ctx context.Context, repo string, desc types.Descriptor
 	return nil
 }
 
-func (c Client) pullDirectory(ctx context.Context, repo string, desc types.Descriptor, basedir string, bar *progress.Bar, useCache bool) error {
+func (c Client) pullDirectory(ctx context.Context, repo string, desc util.Descriptor, basedir string, bar *progress.Bar, useCache bool) error {
 	// check hash
 	bar.SetNameStatus(desc.Name, "checking", false)
 	digest, err := TGZ(ctx, filepath.Join(basedir, desc.Name), "")
@@ -208,8 +224,8 @@ func (c Client) pullDirectory(ctx context.Context, repo string, desc types.Descr
 	}
 }
 
-func (c Client) PullBlob(ctx context.Context, repo string, desc types.Descriptor, into io.Writer) error {
-	location, err := c.Remote.GetBlobLocation(ctx, repo, desc, types.BlobLocationPurposeDownload)
+func (c Client) PullBlob(ctx context.Context, repo string, desc util.Descriptor, into io.Writer) error {
+	location, err := c.Remote.GetBlobLocation(ctx, repo, desc, util.BlobLocationPurposeDownload)
 	if err != nil {
 		if !IsServerUnsupportError(err) {
 			return err
@@ -220,9 +236,9 @@ func (c Client) PullBlob(ctx context.Context, repo string, desc types.Descriptor
 }
 
 func IsServerUnsupportError(err error) bool {
-	info := errors.ErrorInfo{}
+	info := response.ErrorInfo{}
 	if stderrors.As(err, &info) {
-		return info.Code == errors.ErrCodeUnsupported || info.HttpStatus == http.StatusNotFound
+		return info.Code == response.ErrCodeUnsupported || info.HttpStatus == http.StatusNotFound
 	}
 	return false
 }

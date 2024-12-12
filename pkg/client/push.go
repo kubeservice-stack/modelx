@@ -1,3 +1,19 @@
+/*
+Copyright 2024 The KubeService-Stack Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package client
 
 import (
@@ -5,33 +21,22 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
-	"github.com/go-logr/logr"
+	"go.uber.org/zap"
+
 	"github.com/opencontainers/go-digest"
-	"golang.org/x/exp/slices"
-	"kubegems.io/modelx/pkg/client/progress"
-	"kubegems.io/modelx/pkg/types"
+	"kubegems.io/modelx/pkg/progress"
+	"kubegems.io/modelx/pkg/util"
 )
 
-const (
-	MediaTypeModelIndexJson      = "application/vnd.modelx.model.index.v1.json"
-	MediaTypeModelManifestJson   = "application/vnd.modelx.model.manifest.v1.json"
-	MediaTypeModelConfigYaml     = "application/vnd.modelx.model.config.v1.yaml"
-	MediaTypeModelFile           = "application/vnd.modelx.model.file.v1"
-	MediaTypeModelDirectoryTarGz = "application/vnd.modelx.model.directory.v1.tar+gz"
-)
-
-var EmptyFileDigiest = digest.Canonical.FromBytes(nil)
-
-const PullPushConcurrency = 3
-
-func (c Client) Push(ctx context.Context, repo, version string, configfile, basedir string) error {
+func (c *Client) Push(ctx context.Context, repo, version string, configfile, basedir string) error {
 	manifest, err := ParseManifest(ctx, basedir, configfile)
 	if err != nil {
 		return err
 	}
-	p, ctx := progress.NewMuiltiBarContext(ctx, os.Stdout, 60, PullPushConcurrency)
+	p, ctx := progress.NewMuiltiBarContext(ctx, os.Stdout, 60, DefaultPullPushConcurrency)
 	// push blobs
 	for i := range manifest.Blobs {
 		desc := &manifest.Blobs[i]
@@ -64,8 +69,8 @@ func (c Client) Push(ctx context.Context, repo, version string, configfile, base
 	return p.Wait()
 }
 
-func ParseManifest(ctx context.Context, basedir string, configfile string) (*types.Manifest, error) {
-	manifest := &types.Manifest{
+func ParseManifest(ctx context.Context, basedir string, configfile string) (*util.Manifest, error) {
+	manifest := &util.Manifest{
 		MediaType: MediaTypeModelManifestJson,
 	}
 	ds, err := os.ReadDir(basedir)
@@ -77,29 +82,29 @@ func ParseManifest(ctx context.Context, basedir string, configfile string) (*typ
 			continue
 		}
 		if entry.Name() == configfile {
-			manifest.Config = types.Descriptor{
+			manifest.Config = util.Descriptor{
 				Name:      entry.Name(),
 				MediaType: MediaTypeModelConfigYaml,
 			}
 			continue
 		}
 		if entry.IsDir() {
-			manifest.Blobs = append(manifest.Blobs, types.Descriptor{
+			manifest.Blobs = append(manifest.Blobs, util.Descriptor{
 				Name:      entry.Name(),
 				MediaType: MediaTypeModelDirectoryTarGz,
 			})
 			continue
 		}
-		manifest.Blobs = append(manifest.Blobs, types.Descriptor{
+		manifest.Blobs = append(manifest.Blobs, util.Descriptor{
 			Name:      entry.Name(),
 			MediaType: MediaTypeModelFile,
 		})
 	}
-	slices.SortFunc(manifest.Blobs, types.SortDescriptorName)
+	slices.SortFunc(manifest.Blobs, util.SortDescriptorName)
 	return manifest, nil
 }
 
-func (c Client) pushDirectory(ctx context.Context, cachedir, blobdir string, desc *types.Descriptor, repo string, bar *progress.Bar) error {
+func (c *Client) pushDirectory(ctx context.Context, cachedir, blobdir string, desc *util.Descriptor, repo string, bar *progress.Bar) error {
 	diri, err := os.Stat(blobdir)
 	if err != nil {
 		return err
@@ -117,7 +122,7 @@ func (c Client) pushDirectory(ctx context.Context, cachedir, blobdir string, des
 	return c.pushFile(ctx, filename, desc, repo, bar)
 }
 
-func (c Client) pushFile(ctx context.Context, blobfile string, desc *types.Descriptor, repo string, bar *progress.Bar) error {
+func (c *Client) pushFile(ctx context.Context, blobfile string, desc *util.Descriptor, repo string, bar *progress.Bar) error {
 	fi, err := os.Stat(blobfile)
 	if err != nil {
 		return err
@@ -146,7 +151,7 @@ func (c Client) pushFile(ctx context.Context, blobfile string, desc *types.Descr
 	return c.PushBlob(ctx, repo, DescriptorWithContent{Descriptor: *desc, GetContent: getReader}, bar)
 }
 
-func (c Client) digest(ctx context.Context, blobfile string) (digest.Digest, error) {
+func (c *Client) digest(ctx context.Context, blobfile string) (digest.Digest, error) {
 	f, err := os.Open(blobfile)
 	if err != nil {
 		return "", err
@@ -160,15 +165,14 @@ func (c Client) digest(ctx context.Context, blobfile string) (digest.Digest, err
 	return digest.FromReader(f)
 }
 
-func (c Client) PushBlob(ctx context.Context, repo string, desc DescriptorWithContent, p *progress.Bar) error {
-	log := logr.FromContextOrDiscard(ctx).WithValues("digest", desc.Digest)
+func (c *Client) PushBlob(ctx context.Context, repo string, desc DescriptorWithContent, p *progress.Bar) error {
 	if desc.Digest == EmptyFileDigiest {
 		p.SetStatus("empty", true)
 		return nil
 	}
 	exist, err := c.Remote.HeadBlob(ctx, repo, desc.Digest)
 	if err != nil {
-		log.Error(err, "check blob exist")
+		extensionLogger.Error("check blob exist", zap.Error(err))
 		return err
 	}
 	if exist {
@@ -193,8 +197,8 @@ func (c Client) PushBlob(ctx context.Context, repo string, desc DescriptorWithCo
 	return nil
 }
 
-func (c Client) pushBlob(ctx context.Context, repo string, desc DescriptorWithContent) error {
-	location, err := c.Remote.GetBlobLocation(ctx, repo, desc.Descriptor, types.BlobLocationPurposeUpload)
+func (c *Client) pushBlob(ctx context.Context, repo string, desc DescriptorWithContent) error {
+	location, err := c.Remote.GetBlobLocation(ctx, repo, desc.Descriptor, util.BlobLocationPurposeUpload)
 	if err != nil {
 		if !IsServerUnsupportError(err) {
 			return err
