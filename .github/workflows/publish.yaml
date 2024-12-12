@@ -27,12 +27,12 @@ jobs:
             name: modelxd
             image: kubeservice-stack/modelxd
             file: ./hack/build/Dockerfile
-            platforms: linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x
+            platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
           -
             name: modelxdl
             image: kubeservice-stack/modelxdl
             file: ./hack/build/Dockerfile.dl
-            platforms: linux/amd64,linux/arm64,linux/386,linux/ppc64le,linux/s390x
+            platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
     steps:
       - name: Checkout
         uses: actions/checkout@v4
