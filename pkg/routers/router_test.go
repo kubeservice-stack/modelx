@@ -31,12 +31,12 @@ func Test_Register(t *testing.T) {
 	aaa := func(c *gin.Context) {
 		c.JSON(http.StatusOK, nil)
 	}
-	Register("aaa", aaa)
-	router.GET("/bbb", RootHander)
+	Register("aaa", "/", "aaa", http.MethodGet, aaa)
+	Router(router)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/bbb", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(404, w.Code)
-	assert.Len(w.Body.String(), 35)
+	assert.Len(w.Body.String(), 27)
 }

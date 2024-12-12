@@ -11,23 +11,24 @@ endif
 CONTAINER_CLI ?= docker
 
 BIN_DIR ?= $(shell pwd)/bin
+# auto add modelxd and modelxdl
 SERVER_NAME ?= modelx
 
 IMAGE ?= ghcr.io/kubeservice-stack/$(SERVER_NAME)
 DOCKERFILE ?= ./hack/build/Dockerfile
-TAG?=$(shell git rev-parse --short HEAD)
-VERSION?=$(shell cat VERSION | grep -Eo "v[0-9]+\.[0-9]+.*")
+TAG ?= $(shell git rev-parse --short HEAD)
 
 BUILD_DATE=$(shell date +"%Y%m%d-%T")
+GIT_VERSION=$(shell git describe --tags --dirty --abbrev=0 2>/dev/null || git symbolic-ref --short HEAD)
 ifndef CI
-	BUILD_USER?=$(USER)
 	BUILD_BRANCH?=$(shell git branch --show-current)
 	BUILD_REVISION?=$(shell git rev-parse --short HEAD)
 else
-	BUILD_USER=Action-Run-ID-$(GITHUB_RUN_ID)
 	BUILD_BRANCH=$(GITHUB_REF:refs/heads/%=%)
 	BUILD_REVISION=$(GITHUB_SHA)
 endif
+
+VERSION?=$(shell echo "${GIT_VERSION}" | sed -e 's/^v//')
 
 TOOLS_BIN_DIR ?= $(shell pwd)/tmp/bin
 export PATH := $(TOOLS_BIN_DIR):$(PATH)
@@ -39,7 +40,7 @@ GOSYCLO_BINARY=$(TOOLS_BIN_DIR)/gocyclo
 SWAGGO_BINARY=$(TOOLS_BIN_DIR)/swag
 TOOLING=$(GOLANGCILINTER_BINARY) $(GOSEC_BINARY) $(GOSYCLO_BINARY) $(SWAGGO_BINARY)
 
-GO_PKG=kubegems.io/modelx/$(SERVER_NAME)
+GO_PKG=$(shell go list -m)
 COMMON_PKG ?= $(GO_PKG)/pkg
 COMMON_CMD ?= $(GO_PKG)/cmd
 COMMON_INTERNAL ?= $(GO_PKG)/internal
@@ -47,11 +48,10 @@ COMMON_INTERNAL ?= $(GO_PKG)/internal
 GO_BUILD_LDFLAGS=\
 	-s \
 	-w \
-	-X $(COMMON_PKG)/version.Revision=$(BUILD_REVISION)  \
-	-X $(COMMON_PKG)/version.BuildUser=$(BUILD_USER) \
-	-X $(COMMON_PKG)/version.BuildDate=$(BUILD_DATE) \
-	-X $(COMMON_PKG)/version.Branch=$(BUILD_BRANCH) \
-	-X $(COMMON_PKG)/version.Version=$(VERSION)
+	-X '$(COMMON_PKG)/version.gitVersion=$(GIT_VERSION)'  \
+	-X '$(COMMON_PKG)/version.buildDate=$(BUILD_DATE)' \
+	-X '$(COMMON_PKG)/version.gitCommit=$(BUILD_REVISION)' \
+	-X '$(COMMON_PKG)/version.defaultVersion=$(VERSION)'
 
 GO_BUILD_RECIPE=\
 	GOOS=$(GOOS) \
@@ -95,7 +95,7 @@ golangci-lint: $(GOLANGCILINTER_BINARY)  # golangci-lint
 
 .PHONY: swag
 swag: $(SWAGGO_BINARY) # swag
-	$(SWAGGO_BINARY) init -g ./cmd/main.go
+	$(SWAGGO_BINARY) init -g ./cmd/$(SERVER_NAME)d/$(SERVER_NAME)d.go
 
 ###########
 # Testing #
@@ -135,20 +135,33 @@ go-sec: $(GOSEC_BINARY) # go security
 ############
 
 .PHONY: build
-build: build-binary build-image # go build both binary and docker image
+build: build-modelx build-modelxd build-modelxdl modelxd-build-image modelxdl-build-image # go build both binary and docker image
 
-.PHONY: build-image # go build output docker image
-build-image: GOOS := linux # Overriding GOOS value for docker image build
-build-image: 
-	$(CONTAINER_CLI) build --build-arg ARCH=$(ARCH) --build-arg OS=$(GOOS) -f $(DOCKERFILE) -t $(IMAGE):$(TAG) .
+.PHONY: modelxd-build-image # go build output docker image
+modelxd-build-image: GOOS := linux # Overriding GOOS value for docker image build
+modelxd-build-image: 
+	$(CONTAINER_CLI) build --build-arg ARCH=$(ARCH) --build-arg OS=$(GOOS) -f $(DOCKERFILE) -t $(IMAGE)d:$(TAG) .
 
-.PHONY: build-binary
-build-binary: # go build output binary
-	$(GO_BUILD_RECIPE) -o ${BIN_DIR}/$(SERVER_NAME) cmd/main.go
+.PHONY: modelxdl-build-image # go build output docker image
+modelxdl-build-image: GOOS := linux # Overriding GOOS value for docker image build
+modelxdl-build-image: 
+	$(CONTAINER_CLI) build --build-arg ARCH=$(ARCH) --build-arg OS=$(GOOS) -f $(DOCKERFILE).dl -t $(IMAGE)dl:$(TAG) .
+
+.PHONY: build-modelx
+build-modelx: # go build output binary
+	$(GO_BUILD_RECIPE) -o ${BIN_DIR}/$(SERVER_NAME) cmd/$(SERVER_NAME)/$(SERVER_NAME).go
+
+.PHONY: build-modelxd
+build-modelxd: # go build output binary
+	$(GO_BUILD_RECIPE) -o ${BIN_DIR}/$(SERVER_NAME)d cmd/$(SERVER_NAME)d/$(SERVER_NAME)d.go
+
+.PHONY: build-modelxdl
+build-modelxdl: # go build output binary
+	$(GO_BUILD_RECIPE) -o ${BIN_DIR}/$(SERVER_NAME)dl cmd/$(SERVER_NAME)dl/$(SERVER_NAME)dl.go
 
 define asserts
 	@echo "Building ${SERVER_NAME}-${1}-${2}"
-	@GOOS=${1} GOARCH=${2} CGO_ENABLED=0 go build -ldflags="$(GO_BUILD_LDFLAGS)" -o ${BIN_DIR}/$(SERVER_NAME)-$(1)-$(2) cmd/main.go
+	@GOOS=${1} GOARCH=${2} CGO_ENABLED=0 go build -ldflags="$(GO_BUILD_LDFLAGS)" -o ${BIN_DIR}/$(SERVER_NAME)-$(1)-$(2) cmd/$(SERVER_NAME)/$(SERVER_NAME).go
 endef
 
 .PHONY: build-assets
