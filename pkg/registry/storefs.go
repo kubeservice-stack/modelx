@@ -27,6 +27,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/errgroup"
@@ -164,6 +165,9 @@ func (m *FSRegistryStore) PutIndex(ctx context.Context, repository string, index
 
 	// use latest manifest annotations as index annotations
 	for _, manifest := range index.Manifests {
+		if manifest.Modified.IsZero() {
+			manifest.Modified = time.Now()
+		}
 		if manifest.Annotations == nil {
 			continue
 		}
@@ -323,8 +327,10 @@ func (m *FSRegistryStore) RefreshGlobalIndex(ctx context.Context) error {
 			desc := types.Descriptor{
 				Name:        repository,
 				MediaType:   MediaTypeModelIndexJson,
+				Modified:    meta.LastModified,
 				Annotations: index.Annotations,
 			}
+
 			indexmap.Store(repository, desc)
 			return nil
 		})

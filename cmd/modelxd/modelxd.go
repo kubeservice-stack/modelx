@@ -155,7 +155,7 @@ func NewRegistryConfig(ctx context.Context, opt *config.Options) (*model.Registr
 	mainLogger.Info("prepare registry", logging.Any("options", opt))
 	var registryStore registry.RegistryInterface
 	if registryStore == nil && opt.S3 != nil && opt.S3.URL != "" {
-		mainLogger.Info("start modelx registry with S3 type", logging.Any("options", opt))
+		mainLogger.Info("start modelx registry with S3 type")
 
 		s3store, err := registry.NewS3RegistryStore(ctx, opt)
 		if err != nil {
