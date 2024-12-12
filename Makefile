@@ -1,8 +1,4 @@
-# Setting SHELL to bash allows bash commands to be executed by recipes.
-# This is a requirement for 'setup-envtest.sh' in the test target.
-# Options are set to exit when a recipe line exits non-zero or a piped command fails.
-SHELL = /usr/bin/env bash -o pipefail
-.SHELLFLAGS = -ec
+SHELL=/usr/bin/env bash -o pipefail
 
 GOOS?=$(shell go env GOOS)
 GOARCH?=$(shell go env GOARCH)
@@ -12,98 +8,166 @@ else
 	ARCH=$(GOARCH)
 endif
 
-BUILD_DATE?=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
-GIT_VERSION?=$(shell git describe --tags --dirty --abbrev=0 2>/dev/null || git symbolic-ref --short HEAD)
-GIT_COMMIT?=$(shell git rev-parse HEAD 2>/dev/null)
-GIT_BRANCH?=$(shell git symbolic-ref --short HEAD 2>/dev/null)
-# semver version
-VERSION?=$(shell echo "${GIT_VERSION}" | sed -e 's/^v//')
-# semver version
-SEMVER_VERSION?=$(shell echo "${GIT_VERSION}" | sed -e 's/^v//')
-BIN_DIR = ${PWD}/bin
+CONTAINER_CLI ?= docker
 
-IMAGE_REGISTRY?=docker.io
-IMAGE_TAG=${GIT_VERSION}
-ifeq (${IMAGE_TAG},main)
-   IMAGE_TAG = latest
+BIN_DIR ?= $(shell pwd)/bin
+SERVER_NAME ?= modelx
+
+IMAGE ?= ghcr.io/kubeservice-stack/$(SERVER_NAME)
+DOCKERFILE ?= ./hack/build/Dockerfile
+TAG?=$(shell git rev-parse --short HEAD)
+VERSION?=$(shell cat VERSION | grep -Eo "v[0-9]+\.[0-9]+.*")
+
+BUILD_DATE=$(shell date +"%Y%m%d-%T")
+ifndef CI
+	BUILD_USER?=$(USER)
+	BUILD_BRANCH?=$(shell git branch --show-current)
+	BUILD_REVISION?=$(shell git rev-parse --short HEAD)
+else
+	BUILD_USER=Action-Run-ID-$(GITHUB_RUN_ID)
+	BUILD_BRANCH=$(GITHUB_REF:refs/heads/%=%)
+	BUILD_REVISION=$(GITHUB_SHA)
 endif
-# Image URL to use all building/pushing image targets
-IMG ?=  ${IMAGE_REGISTRY}/dongjiang1989/modelx:$(IMAGE_TAG)
-DLIMG ?=  ${IMAGE_REGISTRY}/dongjiang1989/modelxdl:$(IMAGE_TAG)
 
-GOPACKAGE=$(shell go list -m)
-ldflags+=-w -s
-ldflags+=-X '${GOPACKAGE}/pkg/version.gitVersion=${GIT_VERSION}'
-ldflags+=-X '${GOPACKAGE}/pkg/version.gitCommit=${GIT_COMMIT}'
-ldflags+=-X '${GOPACKAGE}/pkg/version.buildDate=${BUILD_DATE}'
-ldflags+=-X '${GOPACKAGE}/pkg/version.defaultVersion=${VERSION}'
+TOOLS_BIN_DIR ?= $(shell pwd)/tmp/bin
+export PATH := $(TOOLS_BIN_DIR):$(PATH)
 
-PUSH?=false
+# tools
+GOLANGCILINTER_BINARY=$(TOOLS_BIN_DIR)/golangci-lint
+GOSEC_BINARY=$(TOOLS_BIN_DIR)/gosec
+GOSYCLO_BINARY=$(TOOLS_BIN_DIR)/gocyclo
+SWAGGO_BINARY=$(TOOLS_BIN_DIR)/swag
+TOOLING=$(GOLANGCILINTER_BINARY) $(GOSEC_BINARY) $(GOSYCLO_BINARY) $(SWAGGO_BINARY)
 
-##@ All
+GO_PKG=kubegems.io/modelx/$(SERVER_NAME)
+COMMON_PKG ?= $(GO_PKG)/pkg
+COMMON_CMD ?= $(GO_PKG)/cmd
+COMMON_INTERNAL ?= $(GO_PKG)/internal
+# The ldflags for the go build process to set the version related data.
+GO_BUILD_LDFLAGS=\
+	-s \
+	-w \
+	-X $(COMMON_PKG)/version.Revision=$(BUILD_REVISION)  \
+	-X $(COMMON_PKG)/version.BuildUser=$(BUILD_USER) \
+	-X $(COMMON_PKG)/version.BuildDate=$(BUILD_DATE) \
+	-X $(COMMON_PKG)/version.Branch=$(BUILD_BRANCH) \
+	-X $(COMMON_PKG)/version.Version=$(VERSION)
 
-all: build-all image-all ## build all
+GO_BUILD_RECIPE=\
+	GOOS=$(GOOS) \
+	GOARCH=$(GOARCH) \
+	CGO_ENABLED=0 \
+	go build -ldflags="$(GO_BUILD_LDFLAGS)"
 
-##@ General
+pkgs = $(shell go list ./... | grep -v /test/ | grep -v /vendor/)
 
-# The help target prints out all targets with their descriptions organized
-# beneath their categories. The categories are represented by '##@' and the
-# target descriptions by '##'. The awk commands is responsible for reading the
-# entire set of makefiles included in this invocation, looking for lines of the
-# file as xyz: ## something, and then pretty-format the target and help. Then,
-# if there's a line with ##@ something, that gets pretty-printed as a category.
-# More info on the usage of ANSI control characters for terminal formatting:
-# https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_parameters
-# More info on the awk command:
-# http://linuxcommand.org/lc3_adv_awk.php
+.PHONY: all
+all: format test build e2e # format test build e2e type.
 
-help: ## Display this help.
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+.PHONY: clean
+clean: # Remove all files and directories ignored by git.
+	git clean -Xfd .
+	rm -rf ${TOOLS_BIN_DIR}
+	rm -rf ${BIN_DIR}
 
-check: linter ## Static code check.
-	${LINTER} run ./...
+##############
+# Formatting #
+##############
 
-preset:
+.PHONY: format
+format: go-fmt go-vet gocyclo golangci-lint # make all go-fmt go-vet gocyclo golangci-lint format type.
 
-BINARIES = modelx modelxd modelxdl
-define build
-	$(foreach n,$(subst  , , ${BINARIES}),
-		@echo "Building $(n)-${1}-${2}"
-		@GOOS=${1} GOARCH=${2} CGO_ENABLED=0 go build -gcflags=all="-N -l" -ldflags="${ldflags}" -o ${BIN_DIR}/$(n)-$(1)-$(2) ${GOPACKAGE}/cmd/$(n)
-	)
+.PHONY: go-fmt # gofmt rewrite to go file
+go-fmt:
+	gofmt -s -w ./pkg ./cmd ./internal
+
+.PHONY: go-vet 
+go-vet: # go vet
+	go vet -stdmethods=false $(pkgs)
+
+.PHONY: gocyclo
+gocyclo: $(GOSYCLO_BINARY) # gocyclo
+	$(GOSYCLO_BINARY) -top 20 -avg -ignore "_test|test/|vendor/" .
+
+.PHONY: golangci-lint
+golangci-lint: $(GOLANGCILINTER_BINARY)  # golangci-lint  
+	$(GOLANGCILINTER_BINARY) run -v
+
+.PHONY: swag
+swag: $(SWAGGO_BINARY) # swag
+	$(SWAGGO_BINARY) init -g ./cmd/main.go
+
+###########
+# Testing #
+###########
+
+.PHONY: test
+test: test-unit test-coverage # go test for test-unit test-coverage
+
+.PHONY: test-unit
+test-unit: # go test unittest cases
+	go test -short $(pkgs) -count=1 -v
+
+.PHONY: test-coverage
+test-coverage: # go test unittest coverage
+	go test -coverprofile=coverage.out -covermode count $(pkgs)
+	go tool cover -func coverage.out
+
+###########
+# E2e #
+###########
+
+.PHONY: e2e
+e2e: KUBECONFIG?=$(HOME)/.kube/config
+e2e: # go test e2e cases
+	go test -mod=readonly -timeout 120m -v ./test/e2e/ --kubeconfig=$(KUBECONFIG) --test-image=$(IMAGE):$(TAG) -count=1
+
+############
+# Security #
+############
+
+.PHONY: go-sec
+go-sec: $(GOSEC_BINARY) # go security
+	$(GOSEC_BINARY) $(pkgs)
+
+############
+# Building #
+############
+
+.PHONY: build
+build: build-binary build-image # go build both binary and docker image
+
+.PHONY: build-image # go build output docker image
+build-image: GOOS := linux # Overriding GOOS value for docker image build
+build-image: 
+	$(CONTAINER_CLI) build --build-arg ARCH=$(ARCH) --build-arg OS=$(GOOS) -f $(DOCKERFILE) -t $(IMAGE):$(TAG) .
+
+.PHONY: build-binary
+build-binary: # go build output binary
+	$(GO_BUILD_RECIPE) -o ${BIN_DIR}/$(SERVER_NAME) cmd/main.go
+
+define asserts
+	@echo "Building ${SERVER_NAME}-${1}-${2}"
+	@GOOS=${1} GOARCH=${2} CGO_ENABLED=0 go build -ldflags="$(GO_BUILD_LDFLAGS)" -o ${BIN_DIR}/$(SERVER_NAME)-$(1)-$(2) cmd/main.go
 endef
 
-##@ Build
-build: preset ## Build binaries.
-	$(call build,${GOOS},${GOARCH})
-	@cp ${BIN_DIR}/modelxd-${GOOS}-${GOARCH} ${BIN_DIR}/modelxd
-	@cp ${BIN_DIR}/modelxdl-${GOOS}-${GOARCH} ${BIN_DIR}/modelxdl
-	@cp ${BIN_DIR}/modelx-${GOOS}-${GOARCH} ${BIN_DIR}/modelx
+.PHONY: build-assets
+build-assets: # go build muti arch for github assets
+	mkdir -p $(BIN_DIR)
+	$(call asserts,linux,amd64)
+	$(call asserts,linux,arm64)
+	$(call asserts,darwin,amd64)
+	$(call asserts,darwin,arm64)
+	$(call asserts,windows,amd64)
 
-build-all: preset
-	$(call build,linux,amd64)
-	$(call build,linux,arm64)
-	$(call build,darwin,amd64)
-	$(call build,darwin,arm64)
-	$(call build,windows,amd64)
+$(TOOLS_BIN_DIR): 
+	mkdir -p $(TOOLS_BIN_DIR)
 
-image:
-	docker buildx build --platform=${GOOS}/${GOARCH} --tag ${IMG} --push=${PUSH} -f Dockerfile ${BIN_DIR}
-	docker buildx build --platform=${GOOS}/${GOARCH} --tag ${DLIMG} --push=${PUSH} -f Dockerfile.dl ${BIN_DIR}
+$(TOOLING): $(TOOLS_BIN_DIR) # Install tools
+	@echo Installing tools from scripts/tools.go
+	@cat scripts/tools.go | grep _ | awk -F'"' '{print $$2}' | GOBIN=$(TOOLS_BIN_DIR) xargs -tI % go install -mod=readonly -modfile=scripts/go.mod %
 
-PLATFORM?=linux/amd64,linux/arm64
-image-all: ## Build container image.
-	docker buildx build --platform=${PLATFORM} --tag ${IMG} --push=${PUSH} -f Dockerfile ${BIN_DIR}
-	docker buildx build --platform=${PLATFORM} --tag ${DLIMG} --push=${PUSH} -f Dockerfile.dl ${BIN_DIR}
+.PHONY: help
+help: # Show help for each of the Makefile recipes.
+	@grep -E '^[a-zA-Z0-9 -]+:.*#' $(MAKEFILE_LIST) | sort | while read -r l; do printf "\033[1;32m$$(echo $$l | cut -f 1 -d':')\033[00m:$$(echo $$l | cut -f 2- -d'#')\n"; done
 
-helm-package:
-	helm package charts/modelx --version=${SEMVER_VERSION} --app-version=${SEMVER_VERSION} 
-
-HELM_REPO_USERNAME?=kubegems
-HELM_REPO_PASSWORD?=
-CHARTMUSEUM_ADDR?=https://${HELM_REPO_USERNAME}:${HELM_REPO_PASSWORD}@charts.kubegems.io/kubegems
-helm-push:
-	curl --data-binary "@modelx-${SEMVER_VERSION}.tgz" ${CHARTMUSEUM_ADDR}/api/charts
-
-clean:
-	- rm -rf ${BIN_DIR}
