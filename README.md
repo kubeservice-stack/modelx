@@ -153,7 +153,7 @@ For more infomations see [setup](docs/setup.md).
 
 ### installation
 
-Download binary from [latest release](https://github.com/kubegems/modelx/releases/latest) to your PATH.
+Download binary from [latest release](https://github.com/kubeservice-stack/modelx/releases/latest) to your PATH.
 
 Completions provided via `modelx completions zsh|bash|fish|powershell`.
 

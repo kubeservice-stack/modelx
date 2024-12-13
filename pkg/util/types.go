@@ -27,7 +27,7 @@ import (
 
 const (
 	AnnotationFileMode   = "filemode"
-	DefaultschemaVersion = "v1.0"
+	DefaultschemaVersion = 1 // default version v1
 )
 
 const (
@@ -37,7 +37,7 @@ const (
 
 type BlobLocation struct {
 	Provider   string     `json:"provider,omitempty"`
-	Purpose    string     `json:"purpose,omitempty"`
+	Purpose    string     `json:"purpose,omitempty"` // 上传 还是 下载
 	Properties Properties `json:"properties,omitempty"`
 }
 

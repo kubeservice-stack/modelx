@@ -24,8 +24,6 @@ import (
 	"slices"
 	"strings"
 
-	"go.uber.org/zap"
-
 	"github.com/opencontainers/go-digest"
 	"kubegems.io/modelx/pkg/progress"
 	"kubegems.io/modelx/pkg/util"
@@ -172,7 +170,6 @@ func (c *Client) PushBlob(ctx context.Context, repo string, desc DescriptorWithC
 	}
 	exist, err := c.Remote.HeadBlob(ctx, repo, desc.Digest)
 	if err != nil {
-		extensionLogger.Error("check blob exist", zap.Error(err))
 		return err
 	}
 	if exist {
@@ -203,9 +200,8 @@ func (c *Client) pushBlob(ctx context.Context, repo string, desc DescriptorWithC
 		if !IsServerUnsupportError(err) {
 			return err
 		}
-		if err := c.Remote.UploadBlobContent(ctx, repo, desc); err != nil {
-			return err
-		}
+
+		return c.Remote.UploadBlobContent(ctx, repo, desc)
 	}
 	return c.Extension.Upload(ctx, desc, *location)
 }
