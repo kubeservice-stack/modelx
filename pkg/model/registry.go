@@ -194,7 +194,6 @@ func GetBlob(c *gin.Context) {
 		}
 		defer result.Close()
 
-		c.Writer.Header().Set("Content-Length", strconv.Itoa(int(result.ContentLength)))
 		c.Writer.Header().Set("Content-Type", result.ContentType)
 		c.Writer.WriteHeader(http.StatusOK)
 		_, _ = io.Copy(c.Writer, result.Content)

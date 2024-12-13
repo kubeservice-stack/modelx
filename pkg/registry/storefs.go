@@ -165,6 +165,7 @@ func (m *FSRegistryStore) PutIndex(ctx context.Context, repository string, index
 
 	// use latest manifest annotations as index annotations
 	for _, manifest := range index.Manifests {
+		index.SchemaVersion = types.DefaultschemaVersion
 		if manifest.Modified.IsZero() {
 			manifest.Modified = time.Now()
 		}
@@ -236,7 +237,9 @@ func (m *FSRegistryStore) RefreshIndex(ctx context.Context, repository string) e
 		return errors.NewInternalError(err)
 	}
 
-	index := types.Index{}
+	index := types.Index{
+		SchemaVersion: types.DefaultschemaVersion,
+	}
 
 	manifests.Range(func(key, value any) bool {
 		index.Manifests = append(index.Manifests, value.(types.Descriptor))
@@ -412,5 +415,5 @@ func (m *FSRegistryStore) DeleteBlob(ctx context.Context, repository string, dig
 func (m *FSRegistryStore) GetBlobLocation(
 	ctx context.Context, repository string, digest digest.Digest, purpose string, properties map[string]string,
 ) (*BlobLocation, error) {
-	return nil, errors.NewUnsupportedError("blob location is not supported in fs store")
+	return nil, errors.NewUnsupportedError("purpose: " + purpose + ". blob location is not supported in fs store")
 }
