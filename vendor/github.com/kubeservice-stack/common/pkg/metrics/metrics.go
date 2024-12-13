@@ -23,17 +23,13 @@ import (
 	"time"
 
 	"github.com/kubeservice-stack/common/pkg/config"
-	"github.com/kubeservice-stack/common/pkg/logger"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/uber-go/tally"
 	promreporter "github.com/uber-go/tally/prometheus"
 )
 
-var (
-	onceEnable       sync.Once
-	prometheusLogger = logger.GetLogger("pkg/common/metrics", "prometheus")
-)
+var onceEnable sync.Once
 
 var (
 	ErrMetricsInitRegistryError = fmt.Errorf("metrics: can not init metrics registry")
@@ -65,7 +61,6 @@ func NewTallyScope(cfg *config.Metrics) *TallyScope {
 		onceEnable.Do(func() {
 			DefaultRegistry().Register(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
 			DefaultRegistry().Register(collectors.NewGoCollector())
-			prometheusLogger.Info("go runtime metrics is exported")
 		})
 	} else {
 		onceEnable.Do(func() {

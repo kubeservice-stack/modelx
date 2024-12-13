@@ -99,8 +99,9 @@ func NewRegistryCmd() *cobra.Command {
 	flags.DurationVar(&config.GlobalModelxdOptions.S3.PresignExpire, "s3-presign-expire", config.GlobalModelxdOptions.S3.PresignExpire, "s3 presign expire")
 	flags.StringVar(&config.GlobalModelxdOptions.S3.Region, "s3-region", config.GlobalModelxdOptions.S3.Region, "s3 region")
 	flags.StringVar(&config.GlobalModelxdOptions.OIDC.Issuer, "oidc-issuer", config.GlobalModelxdOptions.OIDC.Issuer, "oidc issuer")
-	flags.BoolVar(&config.GlobalModelxdOptions.EnableRedirect, "enable-redirect", config.GlobalModelxdOptions.EnableRedirect, "enable blob storage redirect")
-	flags.BoolVar(&config.GlobalModelxdOptions.EnableMetrics, "enable-metrics", true, "enable metrics api")
+	flags.StringVar(&config.GlobalModelxdOptions.Local.Basepath, "path", config.GlobalModelxdOptions.Local.Basepath, "local metadate store path. Default: ./data/registry/")
+	flags.BoolVar(&config.GlobalModelxdOptions.EnableRedirect, "enable-redirect", config.GlobalModelxdOptions.EnableRedirect, "enable blob storage redirect. Default: false")
+	flags.BoolVar(&config.GlobalModelxdOptions.EnableMetrics, "enable-metrics", true, "enable metrics api. Default: true")
 
 	return cmd
 }
