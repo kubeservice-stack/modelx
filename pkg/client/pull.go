@@ -230,8 +230,7 @@ func (c Client) PullBlob(ctx context.Context, repo string, desc util.Descriptor,
 		if !IsServerUnsupportError(err) {
 			return err
 		}
-		err = c.Remote.GetBlobContent(ctx, repo, desc.Digest, into)
-		return err
+		return c.Remote.GetBlobContent(ctx, repo, desc.Digest, into)
 	}
 	return c.Extension.Download(ctx, desc, *location, into)
 }
