@@ -38,7 +38,6 @@ const (
 type BlobLocation struct {
 	Provider   string     `json:"provider,omitempty"`
 	Purpose    string     `json:"purpose,omitempty"` // 上传 还是 下载
-	Model      string     `json:"purpose,omitempty"` // raw s3 还是 raw localfs
 	Properties Properties `json:"properties,omitempty"`
 }
 
