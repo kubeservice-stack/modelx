@@ -71,7 +71,7 @@ func (c *Client) Pull(ctx context.Context, repo string, version string, into str
 					flag = true
 				}
 			}
-			if flag == false {
+			if !flag {
 				_ = utils.RemoveDir(filepath.Join(into, dirlist))
 				_ = utils.RemoveFile(filepath.Join(into, dirlist))
 			}
