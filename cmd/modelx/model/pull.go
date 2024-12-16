@@ -27,22 +27,27 @@ import (
 )
 
 func NewPullCmd() *cobra.Command {
+	IsForce := false
 	cmd := &cobra.Command{
 		Use:   "pull",
 		Short: "pull a model from a repository",
+		Long:  "pull [--force/-f] <repo>/[project]/[name]@[version] .",
 		Example: `
 	# Pull project/demo version latest to dirctory demo by default
 
-  		modelx pull  https://myrepo/project/demo
+  		modelx pull  myrepo/project/demo
 
 	# Pull project/demo to current dirctoty
 
-		modelx pull  https://myrepo/project/demo@version .
+		modelx pull  myrepo/project/demo@version .
 		
 	# Pull project/demo to dirctoty abc
 
-		modelx pull  https://myrepo/project/demo@version abc
+		modelx pull  myrepo/project/demo@version abc
 
+	# Pull project/demo to dirctoty abc
+
+		modelx pull -f myrepo/project/demo@version abc
 		`,
 		SilenceUsage: true,
 		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -63,13 +68,14 @@ func NewPullCmd() *cobra.Command {
 			if len(args) == 1 {
 				args = append(args, "")
 			}
-			return PullModelx(ctx, args[0], args[1])
+			return PullModelx(ctx, args[0], args[1], IsForce)
 		},
 	}
+	cmd.Flags().BoolVarP(&IsForce, "force", "f", false, "force pull clean local modelx file or directory")
 	return cmd
 }
 
-func PullModelx(ctx context.Context, ref string, into string) error {
+func PullModelx(ctx context.Context, ref string, into string, force bool) error {
 	reference, err := ParseReference(ref)
 	if err != nil {
 		return err
@@ -81,5 +87,5 @@ func PullModelx(ctx context.Context, ref string, into string) error {
 		into = path.Base(reference.Repository)
 	}
 	fmt.Printf("Pulling %s into %s \n", reference.String(), into)
-	return reference.Client().Pull(ctx, reference.Repository, reference.Version, into)
+	return reference.Client().Pull(ctx, reference.Repository, reference.Version, into, force)
 }

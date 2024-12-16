@@ -42,5 +42,9 @@ const (
 	MediaTypeModelDirectoryTarGz = "application/vnd.modelx.model.directory.v1.tar+gz"
 
 	// default retry count
-	DefaultPullPushConcurrency = 3
+	DefaultPullPushConcurrency = 5
+
+	ModelConfigFileName = "modelx.yaml"
+	ReadmeFileName      = "README.md"
+	ModelCacheDir       = ".modelx"
 )
