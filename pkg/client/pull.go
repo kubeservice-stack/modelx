@@ -25,14 +25,16 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/kubeservice-stack/common/pkg/utils"
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/errgroup"
+
 	"kubegems.io/modelx/pkg/progress"
 	"kubegems.io/modelx/pkg/response"
 	"kubegems.io/modelx/pkg/util"
 )
 
-func (c *Client) Pull(ctx context.Context, repo string, version string, into string) error {
+func (c *Client) Pull(ctx context.Context, repo string, version string, into string, force bool) error {
 	// check if the directory exists and is empty
 	if dirInfo, err := os.Stat(into); err != nil {
 		if !os.IsNotExist(err) {
@@ -51,18 +53,38 @@ func (c *Client) Pull(ctx context.Context, repo string, version string, into str
 	if err != nil {
 		return err
 	}
-	return c.PullBlobs(ctx, repo, into, append(manifest.Blobs, manifest.Config))
+
+	blobs := append(manifest.Blobs, manifest.Config)
+	if force {
+		dirlists, err := utils.ListDir(into)
+		if err != nil {
+			return fmt.Errorf("force clean %s model fail, Please use pull model to other dirctoty.", into)
+		}
+
+		for _, dirlist := range dirlists {
+			if dirlist == ModelCacheDir || dirlist == ModelConfigFileName || dirlist == ReadmeFileName {
+				continue
+			}
+			flag := false
+			for _, blob := range blobs {
+				if dirlist == blob.Name {
+					flag = true
+				}
+			}
+			if flag == false {
+				_ = utils.RemoveDir(filepath.Join(into, dirlist))
+				_ = utils.RemoveFile(filepath.Join(into, dirlist))
+			}
+		}
+	}
+
+	return c.PullBlobs(ctx, repo, into, blobs)
 }
 
 func (c *Client) PullBlobs(ctx context.Context, repo string, basedir string, blobs []util.Descriptor) error {
 	mb, ctx := progress.NewMuiltiBarContext(ctx, os.Stdout, 60, DefaultPullPushConcurrency)
 	for _, blob := range blobs {
 		mb.Go(blob.Name, "pending", func(b *progress.Bar) error {
-			if blob.MediaType == MediaTypeModelDirectoryTarGz {
-				if err := os.MkdirAll(filepath.Join(basedir, blob.Name), 0o755); err != nil {
-					return fmt.Errorf("create directory %s: %v", filepath.Join(basedir, blob.Name), err)
-				}
-			}
 			return c.pullBlobProgress(ctx, repo, blob, basedir, b)
 		})
 	}
@@ -72,6 +94,9 @@ func (c *Client) PullBlobs(ctx context.Context, repo string, basedir string, blo
 func (c *Client) pullBlobProgress(ctx context.Context, repo string, desc util.Descriptor, basedir string, bar *progress.Bar) error {
 	switch desc.MediaType {
 	case MediaTypeModelDirectoryTarGz:
+		if err := os.MkdirAll(filepath.Join(basedir, desc.Name), 0o755); err != nil {
+			return fmt.Errorf("create directory %s: %v", filepath.Join(basedir, desc.Name), err)
+		}
 		return c.pullDirectory(ctx, repo, desc, basedir, bar, true)
 	case MediaTypeModelFile:
 		return c.pullFile(ctx, repo, desc, basedir, bar)

@@ -16,11 +16,6 @@ limitations under the License.
 
 package model
 
-const (
-	ModelConfigFileName = "modelx.yaml"
-	ReadmeFileName      = "README.md"
-)
-
 type ModelConfig struct {
 	Description string            `json:"description"`
 	FrameWork   string            `json:"framework"`

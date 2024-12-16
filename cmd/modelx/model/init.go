@@ -26,6 +26,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
+
+	"kubegems.io/modelx/pkg/client"
 )
 
 func NewInitCmd() *cobra.Command {
@@ -103,7 +105,7 @@ func InitModelx(ctx context.Context, path string, force bool) error {
 	if err != nil {
 		return fmt.Errorf("encode model %w", err)
 	}
-	configfile := filepath.Join(path, ModelConfigFileName)
+	configfile := filepath.Join(path, client.ModelConfigFileName)
 	if err := os.WriteFile(configfile, configcontent.Bytes(), 0o755); err != nil {
 		return fmt.Errorf("write model config:%s %w", configfile, err)
 	}
@@ -111,7 +113,7 @@ func InitModelx(ctx context.Context, path string, force bool) error {
 	// Init README.md
 	basefile := filepath.Base(path)
 	if basefile != "" {
-		readmefile := filepath.Join(path, ReadmeFileName)
+		readmefile := filepath.Join(path, client.ReadmeFileName)
 		_, err := os.Stat(readmefile)
 		if errors.Is(err, os.ErrNotExist) {
 			readmecontent := fmt.Sprintf("# %s\n\nAwesome model descrition.\n", basefile)

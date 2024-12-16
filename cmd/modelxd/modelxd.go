@@ -88,20 +88,20 @@ func NewRegistryCmd() *cobra.Command {
 	}
 
 	flags := cmd.Flags()
-	flags.StringVar(&config.GlobalModelxdOptions.Listen, "listen", config.GlobalModelxdOptions.Listen, "listen address")
-	flags.StringVar(&config.GlobalModelxdOptions.TLS.CAFile, "tls-ca", config.GlobalModelxdOptions.TLS.CAFile, "tls ca file")
-	flags.StringVar(&config.GlobalModelxdOptions.TLS.CertFile, "tls-cert", config.GlobalModelxdOptions.TLS.CertFile, "tls cert file")
-	flags.StringVar(&config.GlobalModelxdOptions.TLS.KeyFile, "tls-key", config.GlobalModelxdOptions.TLS.KeyFile, "tls key file")
-	flags.StringVar(&config.GlobalModelxdOptions.S3.Buket, "s3-bucket", config.GlobalModelxdOptions.S3.Buket, "s3 bucket")
-	flags.StringVar(&config.GlobalModelxdOptions.S3.URL, "s3-url", config.GlobalModelxdOptions.S3.URL, "s3 url")
-	flags.StringVar(&config.GlobalModelxdOptions.S3.AccessKey, "s3-access-key", config.GlobalModelxdOptions.S3.AccessKey, "s3 access key")
-	flags.StringVar(&config.GlobalModelxdOptions.S3.SecretKey, "s3-secret-key", config.GlobalModelxdOptions.S3.SecretKey, "s3 secret key")
-	flags.DurationVar(&config.GlobalModelxdOptions.S3.PresignExpire, "s3-presign-expire", config.GlobalModelxdOptions.S3.PresignExpire, "s3 presign expire")
-	flags.StringVar(&config.GlobalModelxdOptions.S3.Region, "s3-region", config.GlobalModelxdOptions.S3.Region, "s3 region")
-	flags.StringVar(&config.GlobalModelxdOptions.OIDC.Issuer, "oidc-issuer", config.GlobalModelxdOptions.OIDC.Issuer, "oidc issuer")
-	flags.StringVar(&config.GlobalModelxdOptions.Local.Basepath, "path", config.GlobalModelxdOptions.Local.Basepath, "local metadate store path. Default: ./data/registry/")
-	flags.BoolVar(&config.GlobalModelxdOptions.EnableRedirect, "enable-redirect", config.GlobalModelxdOptions.EnableRedirect, "enable blob storage redirect. Default: false")
-	flags.BoolVar(&config.GlobalModelxdOptions.EnableMetrics, "enable-metrics", true, "enable metrics api. Default: true")
+	flags.StringVar(&config.GlobalModelxdOptions.Listen, "listen", config.GlobalModelxdOptions.Listen, "listen address.")
+	flags.StringVar(&config.GlobalModelxdOptions.TLS.CAFile, "tls-ca", config.GlobalModelxdOptions.TLS.CAFile, "tls ca file.")
+	flags.StringVar(&config.GlobalModelxdOptions.TLS.CertFile, "tls-cert", config.GlobalModelxdOptions.TLS.CertFile, "tls cert file.")
+	flags.StringVar(&config.GlobalModelxdOptions.TLS.KeyFile, "tls-key", config.GlobalModelxdOptions.TLS.KeyFile, "tls key file.")
+	flags.StringVar(&config.GlobalModelxdOptions.S3.Buket, "s3-bucket", config.GlobalModelxdOptions.S3.Buket, "s3 bucket.")
+	flags.StringVar(&config.GlobalModelxdOptions.S3.URL, "s3-url", config.GlobalModelxdOptions.S3.URL, "s3 url.")
+	flags.StringVar(&config.GlobalModelxdOptions.S3.AccessKey, "s3-access-key", config.GlobalModelxdOptions.S3.AccessKey, "s3 access key.")
+	flags.StringVar(&config.GlobalModelxdOptions.S3.SecretKey, "s3-secret-key", config.GlobalModelxdOptions.S3.SecretKey, "s3 secret key.")
+	flags.DurationVar(&config.GlobalModelxdOptions.S3.PresignExpire, "s3-presign-expire", config.GlobalModelxdOptions.S3.PresignExpire, "s3 presign expire.")
+	flags.StringVar(&config.GlobalModelxdOptions.S3.Region, "s3-region", config.GlobalModelxdOptions.S3.Region, "s3 region.")
+	flags.StringVar(&config.GlobalModelxdOptions.OIDC.Issuer, "oidc-issuer", config.GlobalModelxdOptions.OIDC.Issuer, "oidc issuer.")
+	flags.StringVar(&config.GlobalModelxdOptions.Local.Basepath, "path", config.GlobalModelxdOptions.Local.Basepath, "local metadate store path.")
+	flags.BoolVar(&config.GlobalModelxdOptions.EnableRedirect, "enable-redirect", false, "enable blob storage redirect.")
+	flags.BoolVar(&config.GlobalModelxdOptions.EnableMetrics, "enable-metrics", true, "enable metrics api.")
 
 	return cmd
 }
@@ -157,7 +157,6 @@ func NewRegistryConfig(ctx context.Context, opt *config.Options) (*model.Registr
 	var registryStore registry.RegistryInterface
 	if registryStore == nil && opt.S3 != nil && opt.S3.URL != "" {
 		mainLogger.Info("start modelx registry with S3 type")
-
 		s3store, err := registry.NewS3RegistryStore(ctx, opt)
 		if err != nil {
 			return nil, err
