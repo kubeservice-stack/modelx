@@ -23,6 +23,7 @@ require (
 	github.com/oklog/run v1.1.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/satori/go.uuid v1.2.0
+	github.com/sergi/go-diff v1.3.1
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/swag v1.16.3

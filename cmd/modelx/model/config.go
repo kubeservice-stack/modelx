@@ -16,9 +16,24 @@ limitations under the License.
 
 package model
 
+type FrameWorkType string
+
+const (
+	TENSORFLOW FrameWorkType = "TensorFlow"
+	PYTHOUCH   FrameWorkType = "PyThouch"
+	CAFFE      FrameWorkType = "Caffe"
+	CAFFE2     FrameWorkType = "Caffe2"
+	MODELSCOPE FrameWorkType = "ModelScope"
+	MINDSPORE  FrameWorkType = "MindSpore"
+)
+
+func (f *FrameWorkType) String() string {
+	return string(*f)
+}
+
 type ModelConfig struct {
 	Description string            `json:"description"`
-	FrameWork   string            `json:"framework"`
+	FrameWork   FrameWorkType     `json:"framework"`
 	Task        string            `json:"task"`
 	Tags        []string          `json:"tags"`
 	Resources   map[string]any    `json:"resources"`
