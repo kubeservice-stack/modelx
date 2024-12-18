@@ -31,7 +31,7 @@ func NewPullCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pull",
 		Short: "pull a model from a repository",
-		Long:  "pull [--force/-f] <repo>/[project]/[name]@[version] .",
+		Long:  "pull [--force-clean/-f] <repo>/[project]/[name]@[version] .",
 		Example: `
 	# Pull project/demo version latest to dirctory demo by default
 
@@ -71,7 +71,7 @@ func NewPullCmd() *cobra.Command {
 			return PullModelx(ctx, args[0], args[1], IsForce)
 		},
 	}
-	cmd.Flags().BoolVarP(&IsForce, "force", "f", false, "force pull clean local modelx file or directory")
+	cmd.Flags().BoolVarP(&IsForce, "force-clean", "f", false, "force pull clean local modelx file or directory")
 	return cmd
 }
 
