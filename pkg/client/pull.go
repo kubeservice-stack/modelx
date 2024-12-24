@@ -62,7 +62,10 @@ func (c *Client) Pull(ctx context.Context, repo string, version string, into str
 		}
 
 		for _, dirlist := range dirlists {
-			if dirlist == ModelCacheDir || dirlist == ModelConfigFileName || dirlist == ReadmeFileName {
+			if dirlist == ModelCacheDir ||
+				dirlist == ModelConfigFileName ||
+				dirlist == ReadmeFileName ||
+				dirlist == ModelVendorDir {
 				continue
 			}
 			flag := false

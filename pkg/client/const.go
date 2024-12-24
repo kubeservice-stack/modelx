@@ -47,4 +47,5 @@ const (
 	ModelConfigFileName = "modelx.yaml"
 	ReadmeFileName      = "README.md"
 	ModelCacheDir       = ".modelx"
+	ModelVendorDir      = "vendor"
 )

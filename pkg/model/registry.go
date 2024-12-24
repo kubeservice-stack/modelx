@@ -102,7 +102,7 @@ func GetManifest(c *gin.Context) {
 	manifest, err := GlobalRegistry.Store.GetManifest(c.Request.Context(), name, reference)
 	if err != nil {
 		if registry.IsRegistryStoreNotNotFound(err) {
-			errors.ResponseError(c.Writer, errors.NewManifestUnknownError(reference))
+			errors.ResponseError(c.Writer, errors.NewManifestUnknownError(name+"/"+reference))
 		} else {
 			errors.ResponseError(c.Writer, err)
 		}
@@ -130,7 +130,7 @@ func DeleteManifest(c *gin.Context) {
 	name, reference := GetRepositoryReference(c)
 	if err := GlobalRegistry.Store.DeleteManifest(c.Request.Context(), name, reference); err != nil {
 		if registry.IsRegistryStoreNotNotFound(err) {
-			errors.ResponseError(c.Writer, errors.NewManifestUnknownError(reference))
+			errors.ResponseError(c.Writer, errors.NewManifestUnknownError(name+"/"+reference))
 		} else {
 			errors.ResponseError(c.Writer, err)
 		}
