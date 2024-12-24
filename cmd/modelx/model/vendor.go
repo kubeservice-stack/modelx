@@ -29,23 +29,18 @@ import (
 	"kubegems.io/modelx/pkg/client"
 )
 
-func NewPushCmd() *cobra.Command {
-	pushVendor := false
+func NewVendorCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "push",
-		Short: "push a model to a modelx repository",
+		Use:   "vendor",
+		Short: "vendor a model depend on other models",
 		Example: `
-	# Push current directory to repo myrepo
+	# vendor current model in current directory
 
-		modelx push myrepo/project/demo
+		modelx vendor .
 
-	# Push current directory to repo myrepo as v1.0.0
+	# vendor abc model with directory abc
 			
-		modelx push myrepo/project/demo@v1.0.0
-
-	# Push directory abc to repo myrepo
-			
-		modelx push myrepo/project/demo@v1.0.0 abc
+		modelx vendor abc
 
 		`,
 		SilenceUsage: true,
@@ -64,24 +59,16 @@ func NewPushCmd() *cobra.Command {
 			if len(args) == 0 {
 				return errors.New("at least one argument is required")
 			}
-			if len(args) == 1 {
-				args = append(args, "")
-			}
-			if err := PushModel(ctx, args[0], args[1], pushVendor); err != nil {
+			if err := VendorModel(ctx, args[0]); err != nil {
 				return err
 			}
 			return nil
 		},
 	}
-	cmd.Flags().BoolVarP(&pushVendor, "push-vendor", "p", false, "force push vendor to model registry")
 	return cmd
 }
 
-func PushModel(ctx context.Context, ref string, dir string, forcepush bool) error {
-	reference, err := ParseReference(ref)
-	if err != nil {
-		return err
-	}
+func VendorModel(ctx context.Context, dir string) error {
 	if dir == "" {
 		dir = "."
 	}
@@ -94,6 +81,24 @@ func PushModel(ctx context.Context, ref string, dir string, forcepush bool) erro
 	if err := yaml.Unmarshal(configcontent, &config); err != nil {
 		return fmt.Errorf("parse model config:%s %w", client.ModelConfigFileName, err)
 	}
-	fmt.Printf("Pushing to %s \n", reference.String())
-	return reference.Client().Push(ctx, reference.Repository, reference.Version, client.ModelConfigFileName, dir, forcepush)
+
+	if len(config.Dependencies) > 0 {
+		fmt.Printf("Pushing vendor to %s/%s \n", dir, client.ModelVendorDir)
+		for _, depend := range config.Dependencies {
+			reference, err := ParseReference(depend)
+			if err != nil {
+				return err
+			}
+			err = reference.Client().Pull(ctx, reference.Repository, reference.Version, dir+"/"+client.ModelVendorDir+"/"+reference.Name(), true)
+			if err != nil {
+				return err
+			}
+		}
+
+	} else {
+		fmt.Printf("No vendor need to %s/%s \n", dir, client.ModelVendorDir)
+		return nil
+	}
+
+	return nil
 }

@@ -27,5 +27,5 @@ type ModelConfig struct {
 	Annotations  map[string]string `json:"annotations,omitempty"`
 	ModelFiles   []string          `json:"modelFiles"`
 	Config       any               `json:"config"`
-	Dependencies []*ModelConfig    `json:"dependencies,omitempty"`
+	Dependencies []string          `json:"dependencies,omitempty"` // reference
 }

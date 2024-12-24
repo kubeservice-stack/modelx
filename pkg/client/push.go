@@ -25,12 +25,13 @@ import (
 	"strings"
 
 	"github.com/opencontainers/go-digest"
+
 	"kubegems.io/modelx/pkg/progress"
 	"kubegems.io/modelx/pkg/util"
 )
 
-func (c *Client) Push(ctx context.Context, repo, version string, configfile, basedir string) error {
-	manifest, err := ParseManifest(ctx, basedir, configfile)
+func (c *Client) Push(ctx context.Context, repo, version string, configfile, basedir string, forcepush bool) error {
+	manifest, err := ParseManifest(ctx, basedir, configfile, forcepush)
 	if err != nil {
 		return err
 	}
@@ -67,7 +68,7 @@ func (c *Client) Push(ctx context.Context, repo, version string, configfile, bas
 	return p.Wait()
 }
 
-func ParseManifest(ctx context.Context, basedir string, configfile string) (*util.Manifest, error) {
+func ParseManifest(ctx context.Context, basedir string, configfile string, forcepush bool) (*util.Manifest, error) {
 	manifest := &util.Manifest{
 		MediaType: MediaTypeModelManifestJson,
 	}
@@ -77,6 +78,9 @@ func ParseManifest(ctx context.Context, basedir string, configfile string) (*uti
 	}
 	for _, entry := range ds {
 		if strings.HasPrefix(entry.Name(), ".") {
+			continue
+		}
+		if forcepush && entry.Name() == ModelVendorDir {
 			continue
 		}
 		if entry.Name() == configfile {

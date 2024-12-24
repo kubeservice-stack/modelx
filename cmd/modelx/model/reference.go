@@ -35,6 +35,17 @@ type Reference struct {
 	Authorization string
 }
 
+func (r Reference) Name() string {
+	re := strings.Split(strings.Trim(r.Repository, " "), "/")
+	if len(re) == 1 {
+		return re[0]
+	} else if len(re) == 2 {
+		return re[1]
+	}
+
+	return ""
+}
+
 func (r Reference) String() string {
 	if r.Version == "" {
 		return fmt.Sprintf("%s/%s", r.Registry, r.Repository)
