@@ -74,8 +74,8 @@ func InitModelx(ctx context.Context, path string, force bool) error {
 		return fmt.Errorf("create modelx directory:%s %w", path, err)
 	}
 	config := ModelConfig{
-		Description: "This is a modelx model",
-		FrameWork:   "<some framework.Pytorch|TensorFlow|Caffe|MindSpore|etc>",
+		Description: "This is a modelx model.",
+		FrameWork:   "<Pytorch/TensorFlow/Caffe/MindSpore/etc>",
 		Config: map[string]interface{}{
 			"inputs":  map[string]interface{}{},
 			"outputs": map[string]interface{}{},
@@ -96,7 +96,9 @@ func InitModelx(ctx context.Context, path string, force bool) error {
 		Mantainers: []string{
 			"maintainer",
 		},
-		ModelFiles: []string{},
+		ModelFiles:   []string{},
+		Command:      []string{},
+		Dependencies: nil,
 	}
 	var configcontent bytes.Buffer
 	encoder := yaml.NewEncoder(&configcontent)
