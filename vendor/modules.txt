@@ -406,13 +406,15 @@ github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.6
 ## explicit
 github.com/klauspost/pgzip
-# github.com/kubeservice-stack/common v1.7.1
+# github.com/kubeservice-stack/common v1.8.0
 ## explicit; go 1.23
 github.com/kubeservice-stack/common/pkg/config
 github.com/kubeservice-stack/common/pkg/config/ltoml
+github.com/kubeservice-stack/common/pkg/dag
 github.com/kubeservice-stack/common/pkg/errno
 github.com/kubeservice-stack/common/pkg/logger
 github.com/kubeservice-stack/common/pkg/metrics
+github.com/kubeservice-stack/common/pkg/orders
 github.com/kubeservice-stack/common/pkg/utils
 # github.com/leodido/go-urn v1.4.0
 ## explicit; go 1.18
