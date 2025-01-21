@@ -7,7 +7,7 @@
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/kubegems/modelx?logo=github&sort=semver)](https://github.com/kubegems/kubegems/releases/latest)
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kubegems)](https://artifacthub.io/packages/search?repo=kubegems)
 ![license](https://img.shields.io/github/license/kubegems/kubegems)
-![github-downloads-link](https://img.shields.io/github/downloads/kubeservice-stack/modelx/total?style=flat)
+[![github-downloads-link](https://img.shields.io/github/downloads/kubeservice-stack/modelx/total?style=flat)](https://github.com/kubeservice-stack/modelx/releases)
 
 A simple, high-performance, scalable model storage service.
 
