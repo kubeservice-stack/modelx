@@ -510,7 +510,7 @@ github.com/spf13/pflag
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/assert/yaml
-# github.com/swaggo/swag v1.16.3
+# github.com/swaggo/swag v1.16.4
 ## explicit; go 1.18
 github.com/swaggo/swag
 # github.com/therootcompany/xz v1.0.1
