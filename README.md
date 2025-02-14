@@ -282,6 +282,7 @@ task: ""
 - [ ] Support modelx high availability
    - [ ] Add support for `etcd` as metadata server
    - [ ] Add support for `redis` as metadata server
+   - [x] Add support for `s3` as metadata server
 - [ ] Support modelx search by `tags` or `annotations`
 - [ ] Support modelx diff by different versions
 - [ ] Support auth and token management
