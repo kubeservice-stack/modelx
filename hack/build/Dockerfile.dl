@@ -2,7 +2,7 @@ ARG ARCH=amd64
 ARG OS=linux
 ARG CGO_ENABLED=0
 # Build the manager binary
-FROM golang:1.23 AS builder
+FROM golang:1.24 AS builder
 
 WORKDIR /workspace
 
