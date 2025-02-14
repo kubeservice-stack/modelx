@@ -1,6 +1,6 @@
 <h1 align="center">ModelX 2.0</h1> 
 
-[![.github/workflows/build.yml](https://github.com/kubeservice-stack/modelx/actions/workflows/build.yml/badge.svg)](https://github.com/kubeservice-stack/modelx/actions/workflows/build.yml)
+[![.github/workflows/build.yml](https://github.com/kubeservice-stack/modelx/actions/workflows/build.yml/badge.svg)](https://github.com/kubeservice-stack/modelx/actions/workflows/publish.yaml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kubeservice-stack/modelx.svg?maxAge=604800)](https://hub.docker.com/r/kubeservice-stack/modelx)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kubeservice-stack/modelx)](https://goreportcard.com/report/github.com/kubeservice-stack/modelx)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/kubeservice-stack/modelx?logo=go)
