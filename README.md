@@ -1,10 +1,10 @@
-<h1 align="center">ModelX</h1> 
+<h1 align="center">ModelX 2.0</h1> 
 
-[![.github/workflows/build.yml](https://github.com/kubegems/modelx/actions/workflows/build.yml/badge.svg)](https://github.com/kubegems/modelx/actions/workflows/build.yml)
-[![Docker Pulls](https://img.shields.io/docker/pulls/kubegems/modelx.svg?maxAge=604800)](https://hub.docker.com/r/kubegems/modelx)
-[![Go Report Card](https://goreportcard.com/badge/github.com/kubegems/modelx)](https://goreportcard.com/report/github.com/kubegems/modelx)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/kubegems/modelx?logo=go)
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/kubegems/modelx?logo=github&sort=semver)](https://github.com/kubegems/kubegems/releases/latest)
+[![.github/workflows/build.yml](https://github.com/kubeservice-stack/modelx/actions/workflows/build.yml/badge.svg)](https://github.com/kubeservice-stack/modelx/actions/workflows/build.yml)
+[![Docker Pulls](https://img.shields.io/docker/pulls/kubeservice-stack/modelx.svg?maxAge=604800)](https://hub.docker.com/r/kubeservice-stack/modelx)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kubeservice-stack/modelx)](https://goreportcard.com/report/github.com/kubeservice-stack/modelx)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/kubeservice-stack/modelx?logo=go)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/kubeservice-stack/modelx?logo=github&sort=semver)](https://github.com/kubegems/kubegems/releases/latest)
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kubegems)](https://artifacthub.io/packages/search?repo=kubegems)
 ![license](https://img.shields.io/github/license/kubegems/kubegems)
 [![github-downloads-link](https://img.shields.io/github/downloads/kubeservice-stack/modelx/total?style=flat)](https://github.com/kubeservice-stack/modelx/releases)
@@ -33,7 +33,7 @@ More infomation see: [How Modelx born](docs/how-modelx-born.md)
 
 #### installation
 
-Download modelxd binary from [latest release](https://github.com/kubegems/modelx/releases/latest) to your PATH.
+Download modelxd binary from [latest release](https://github.com/kubeservice-stack/modelx/releases/latest) to your PATH.
 
 Determine your version with modelxd --version.
 
