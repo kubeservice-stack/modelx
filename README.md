@@ -272,3 +272,20 @@ tags:
   - <other>
 task: ""
 ```
+
+## Roadmaps
+- [x] Support add `modelx vendor` management
+- [x] Support add `modelx dependencies` management
+- [x] Support add `modelx verify`
+- [x] Support `modelx.yaml` init 
+- [ ] Support modelx high availability
+   - [ ] Add support for `etcd` as metadata server
+   - [ ] Add support for `redis` as metadata server
+- [ ] Support modelx search by `tags` or `annotations`
+- [ ] Support modelx diff by different versions
+- [ ] Support auth and token management
+   - [ ] support `jwt` authentication
+   - [ ] support using a username and access token or password
+- [ ] Support `modelx mirror` to synchronize models and datasets from huggingface hub and ollama register
+   - [ ] ollama register
+   - [ ] huggingface hub
