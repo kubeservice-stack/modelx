@@ -8,6 +8,7 @@
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kubegems)](https://artifacthub.io/packages/search?repo=kubegems)
 ![license](https://img.shields.io/github/license/kubegems/kubegems)
 [![github-downloads-link](https://img.shields.io/github/downloads/kubeservice-stack/modelx/total?style=flat)](https://github.com/kubeservice-stack/modelx/releases)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkubeservice-stack%2Fmodelx.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkubeservice-stack%2Fmodelx?ref=badge_shield)
 
 A simple, high-performance, scalable model storage service.
 
@@ -289,3 +290,7 @@ task: ""
 - [ ] Support `modelx mirror` to synchronize models and datasets from huggingface hub and ollama register
    - [ ] ollama register
    - [ ] huggingface hub
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkubeservice-stack%2Fmodelx.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkubeservice-stack%2Fmodelx?ref=badge_large)
