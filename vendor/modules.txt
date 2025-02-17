@@ -378,8 +378,8 @@ github.com/klauspost/cpuid/v2
 # github.com/klauspost/pgzip v1.2.6
 ## explicit
 github.com/klauspost/pgzip
-# github.com/kubeservice-stack/common v1.8.1
-## explicit; go 1.23
+# github.com/kubeservice-stack/common v1.8.2
+## explicit; go 1.24.0
 github.com/kubeservice-stack/common/pkg/config
 github.com/kubeservice-stack/common/pkg/config/ltoml
 github.com/kubeservice-stack/common/pkg/dag
