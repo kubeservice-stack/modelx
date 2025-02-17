@@ -27,6 +27,7 @@ type Discovery struct {
 	Namespace   string         `toml:"namespace" json:"namespace" env:"DISCOVERY_NAMESPACE"`         // 命名空间
 	Endpoints   []string       `toml:"endpoints" json:"endpoints" env:"DISCOVERY_ENDPOINTS"`         // 连接端点
 	DialTimeout utils.Duration `toml:"dial_timeout" json:"dial_timeout" env:"DISCOVERY_DIALTIMEOUT"` // 连接超时时间
+	Prefix      string         `toml:"prefix" json:"prefix" env:"DISCOVERY_PREFIX"`                  // 前缀
 }
 
 func (ds Discovery) TOML() string {
@@ -41,10 +42,13 @@ func (ds Discovery) TOML() string {
   ## etcd 集群配置
   endpoints = %s
   ## ETCD连接 timeout时间
-  dial_timeout = "%s"`,
+  dial_timeout = "%s"
+  ## ETCD前缀key
+  prefix = "%s"`,
 		ds.Namespace,
 		endpoints,
 		ds.DialTimeout.String(),
+		ds.Prefix,
 	)
 }
 
@@ -52,6 +56,7 @@ func (ds Discovery) DefaultConfig() Discovery {
 	ds = Discovery{
 		Namespace: "application",
 		Endpoints: []string{"http://127.0.0.1:2379"},
+		Prefix:    "",
 	}
 	return ds
 }
