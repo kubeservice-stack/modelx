@@ -289,6 +289,7 @@ task: ""
 - [ ] Support auth and token management
    - [ ] support `jwt` authentication
    - [ ] support using a username and access token or password
+   - [x] support `OIDC` authentication
 - [ ] Support `modelx mirror` to synchronize models and datasets from huggingface hub and ollama register
    - [ ] ollama register
    - [ ] huggingface hub
