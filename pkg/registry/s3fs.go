@@ -69,7 +69,7 @@ func NewS3FSProvider(ctx context.Context, options *modelxconfig.S3Options) (*S3S
 		o.UsePathStyle = options.PathStyle
 	})
 	return &S3StorageProvider{
-		Bucket:  options.Buket,
+		Bucket:  options.Bucket,
 		Client:  s3cli,
 		Expire:  options.PresignExpire,
 		Prefix:  "registry",

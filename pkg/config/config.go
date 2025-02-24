@@ -57,7 +57,7 @@ type TLSOptions struct {
 type S3Options struct {
 	URL           string        `json:"url,omitempty"`
 	Region        string        `json:"region,omitempty"`
-	Buket         string        `json:"buket,omitempty"`
+	Bucket        string        `json:"bucket,omitempty"`
 	AccessKey     string        `json:"accessKey,omitempty"`
 	SecretKey     string        `json:"secretKey,omitempty"`
 	PresignExpire time.Duration `json:"presignExpire,omitempty"`
@@ -66,13 +66,29 @@ type S3Options struct {
 
 func NewDefaultS3Options() *S3Options {
 	return &S3Options{
-		Buket:         "registry",
+		Bucket:        "registry",
 		URL:           "",
 		AccessKey:     "",
 		SecretKey:     "",
 		PresignExpire: time.Hour,
 		Region:        "",
 		PathStyle:     true,
+	}
+}
+
+type EtcdOptions struct {
+	Namespace   string        `json:"namespace"`   // 命名空间
+	Endpoints   []string      `json:"endpoints"`   // 连接端点
+	DialTimeout time.Duration `json:"dialTimeout"` // 连接超时时间
+	Prefix      string        `json:"prefix"`      // 前缀key
+}
+
+func NewDefaultEtcdOptions() *EtcdOptions {
+	return &EtcdOptions{
+		Namespace:   "default",
+		Endpoints:   []string{},
+		DialTimeout: 3 * time.Minute, // default 3min
+		Prefix:      "modelx-",
 	}
 }
 
