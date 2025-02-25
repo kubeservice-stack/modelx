@@ -65,7 +65,11 @@ func (c *Client) Push(ctx context.Context, repo, version string, configfile, bas
 		b.SetNameStatus("manifest", "done", true)
 		return nil
 	})
-	return p.Wait()
+
+	if err := p.Wait(); err != nil {
+		return err
+	}
+	return err
 }
 
 func ParseManifest(ctx context.Context, basedir string, configfile string, forcepush bool) (*util.Manifest, error) {

@@ -24,10 +24,9 @@ import (
 	"strconv"
 	"strings"
 
-	"go.uber.org/zap"
-
 	"github.com/gin-gonic/gin"
 	"github.com/opencontainers/go-digest"
+	"go.uber.org/zap"
 
 	registry "kubegems.io/modelx/pkg/registry"
 	errors "kubegems.io/modelx/pkg/response"
@@ -181,6 +180,18 @@ func PutBlob(c *gin.Context) {
 	})
 }
 
+func CopyBlobs(c *gin.Context) {
+	repositoryTo, _ := c.Param("repositoryto")+"/"+c.Param("nameto"), c.Param("referenceto")
+	repositoryFrom, _ := c.Param("repositoryfrom")+"/"+c.Param("namefrom"), c.Param("referencefrom")
+
+	if err := GlobalRegistry.Store.CopyBlobs(c.Request.Context(), repositoryTo, repositoryFrom); err != nil {
+		modelLogger.Error("store copy blob", zap.Error(err), zap.Any("action", "copy-blob"), zap.Any("repositoryTo", repositoryTo), zap.Any("repositoryFrom", repositoryFrom))
+		errors.ResponseError(c.Writer, err)
+		return
+	}
+	c.Writer.WriteHeader(http.StatusCreated)
+}
+
 func GetBlob(c *gin.Context) {
 	BlobDigestFun(c, func(ctx context.Context, repository string, digest digest.Digest) {
 		result, err := GlobalRegistry.Store.GetBlob(c.Request.Context(), repository, digest)
@@ -305,6 +316,8 @@ func init() {
 	router.Register("Blobs", "/", ":repository/:name/blobs/:digest", http.MethodHead, HeadBlob)
 	router.Register("Blobs", "/", ":repository/:name/blobs/:digest", http.MethodGet, GetBlob)
 	router.Register("Blobs", "/", ":repository/:name/blobs/:digest", http.MethodPut, PutBlob)
+	// repository/copys
+	router.Register("Blobs", "/copys/", ":repositoryto/:nameto/:referenceto/:repositoryfrom/:namefrom/:referencefrom", http.MethodPut, CopyBlobs)
 
 	// repository/blobs/locations
 	router.Register("BlobLocations", "/", ":repository/:name/blobs/:digest/locations/:purpose", http.MethodGet, GetBlobLocation)

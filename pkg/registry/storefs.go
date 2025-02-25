@@ -31,6 +31,7 @@ import (
 
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/errgroup"
+
 	"kubegems.io/modelx/pkg/config"
 	errors "kubegems.io/modelx/pkg/response"
 	types "kubegems.io/modelx/pkg/util"
@@ -379,10 +380,42 @@ func (m *FSRegistryStore) GetBlob(ctx context.Context, repository string, digest
 	return content, nil
 }
 
+func (m *FSRegistryStore) CopyBlob(ctx context.Context, repositoryTo, repositoryFrom string, digest digest.Digest) error {
+	pathTo := BlobDigestPath(repositoryTo, digest)
+	pathFrom := BlobDigestPath(repositoryFrom, digest)
+	err := m.FS.Copy(ctx, pathTo, pathFrom)
+	if err != nil {
+		return errors.NewInternalError(err)
+	}
+	return nil
+}
+
 func (m *FSRegistryStore) PutBlob(ctx context.Context, repository string, digest digest.Digest, content BlobContent) error {
 	path := BlobDigestPath(repository, digest)
 	if err := m.FS.Put(ctx, path, content); err != nil {
 		return errors.NewInternalError(err)
+	}
+	return nil
+}
+
+func (m *FSRegistryStore) CopyBlobs(ctx context.Context, repositoryTo, repositoryFrom string) error {
+	prefix := BlobDigestPath(repositoryFrom, "")
+	metas, err := m.FS.List(ctx, prefix, true)
+	if err != nil {
+		return err
+	}
+	for _, meta := range metas {
+		_, hash := path.Split(meta.Name)
+		exist, err := m.ExistsBlob(ctx, repositoryTo, digest.Digest("sha256:"+hash))
+		if err != nil {
+			return err
+		}
+		if !exist {
+			err = m.CopyBlob(ctx, repositoryTo, repositoryFrom, digest.Digest("sha256:"+hash))
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }

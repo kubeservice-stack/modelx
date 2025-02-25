@@ -145,6 +145,15 @@ func (m *S3StorageProvider) Get(ctx context.Context, path string) (*BlobContent,
 	}, nil
 }
 
+func (f *S3StorageProvider) Copy(ctx context.Context, pathTo, pathFrom string) error {
+	blobcontnt, err := f.Get(ctx, pathFrom)
+	if err != nil {
+		return err
+	}
+
+	return f.Put(ctx, pathTo, *blobcontnt)
+}
+
 func (m *S3StorageProvider) Exists(ctx context.Context, path string) (bool, error) {
 	_, err := m.Client.HeadObject(ctx, &s3.HeadObjectInput{
 		Bucket: aws.String(m.Bucket),
