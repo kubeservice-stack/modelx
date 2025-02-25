@@ -63,6 +63,18 @@ func (t *RegistryClient) PutManifest(ctx context.Context, repository string, ver
 	return t.simpleuploadrequest(ctx, "PUT", path, manifest, nil)
 }
 
+func (t *RegistryClient) CopyBlobs(ctx context.Context, repositoryTo, repositoryFrom string, versionTo, versionFrom string) error {
+	if versionTo == "" {
+		versionTo = "latest"
+	}
+
+	if versionFrom == "" {
+		versionFrom = "latest"
+	}
+	path := "/copys/" + repositoryTo + "/" + versionTo + "/" + repositoryFrom + "/" + versionFrom
+	return t.simpleuploadrequest(ctx, "PUT", path, nil, nil)
+}
+
 func (t *RegistryClient) GetIndex(ctx context.Context, repository string, search string) (*util.Index, error) {
 	index := &util.Index{}
 	path := "/" + repository + "/index" + "?search=" + search
@@ -86,6 +98,15 @@ func (t *RegistryClient) GetGlobalIndex(ctx context.Context, search string) (*ut
 		return nil, err
 	}
 	return index, nil
+}
+
+func (t *RegistryClient) HeadBlobString(ctx context.Context, repository string, digest string) (bool, error) {
+	path := "/" + repository + "/blobs/" + digest
+	resp, err := t.request(ctx, "HEAD", path, nil, nil, nil)
+	if err != nil {
+		return false, err
+	}
+	return resp.StatusCode == http.StatusOK, nil
 }
 
 func (t *RegistryClient) HeadBlob(ctx context.Context, repository string, digest digest.Digest) (bool, error) {

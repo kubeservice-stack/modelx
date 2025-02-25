@@ -49,6 +49,10 @@ func (c *Client) PutManifest(ctx context.Context, repo, version string, manifest
 	return c.Remote.PutManifest(ctx, repo, version, manifest)
 }
 
+func (c *Client) CopyBlobs(ctx context.Context, repoTo, repoFrom, versionTo, versionFrom string) error {
+	return c.Remote.CopyBlobs(ctx, repoTo, repoFrom, versionTo, versionFrom)
+}
+
 func (c *Client) GetIndex(ctx context.Context, repo string, search string) (*util.Index, error) {
 	return c.Remote.GetIndex(ctx, repo, search)
 }

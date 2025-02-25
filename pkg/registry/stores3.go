@@ -117,6 +117,14 @@ func (s *S3RegistryStore) ListBlobs(ctx context.Context, repository string) ([]d
 	return s.fs.ListBlobs(ctx, repository)
 }
 
+func (s *S3RegistryStore) CopyBlobs(ctx context.Context, repositoryTo, repositoryFrom string) error {
+	return s.fs.CopyBlobs(ctx, repositoryTo, repositoryFrom)
+}
+
+func (s *S3RegistryStore) CopyBlob(ctx context.Context, repositoryTo, repositoryFrom string, digest digest.Digest) error {
+	return s.fs.CopyBlob(ctx, repositoryTo, repositoryFrom, digest)
+}
+
 func (s *S3RegistryStore) GetBlob(ctx context.Context, repository string, digest digest.Digest) (*BlobContent, error) {
 	return s.fs.GetBlob(ctx, repository, digest)
 }

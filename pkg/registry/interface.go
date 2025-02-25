@@ -27,6 +27,7 @@ import (
 type FSProvider interface {
 	Put(ctx context.Context, path string, content BlobContent) error
 	Get(ctx context.Context, path string) (*BlobContent, error)
+	Copy(ctx context.Context, pathTo, pathFrom string) error
 	Stat(ctx context.Context, path string) (FsObjectMeta, error)
 	Remove(ctx context.Context, path string, recursive bool) error
 	Exists(ctx context.Context, path string) (bool, error)
@@ -46,6 +47,8 @@ type RegistryInterface interface {
 
 	ListBlobs(ctx context.Context, repository string) ([]digest.Digest, error)
 	GetBlob(ctx context.Context, repository string, digest digest.Digest) (*BlobContent, error)
+	CopyBlob(ctx context.Context, repositoryTo, repositoryFrom string, digest digest.Digest) error
+	CopyBlobs(ctx context.Context, repositoryTo, repositoryFrom string) error
 	DeleteBlob(ctx context.Context, repository string, digest digest.Digest) error
 	PutBlob(ctx context.Context, repository string, digest digest.Digest, content BlobContent) error
 	ExistsBlob(ctx context.Context, repository string, digest digest.Digest) (bool, error)

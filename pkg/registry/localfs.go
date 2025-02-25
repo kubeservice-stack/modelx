@@ -69,6 +69,15 @@ func (f *LocalFSProvider) Get(ctx context.Context, path string) (*BlobContent, e
 	}, nil
 }
 
+func (f *LocalFSProvider) Copy(ctx context.Context, pathTo, pathFrom string) error {
+	blobcontnt, err := f.Get(ctx, pathFrom)
+	if err != nil {
+		return err
+	}
+
+	return f.Put(ctx, pathTo, *blobcontnt)
+}
+
 func (f *LocalFSProvider) Remove(ctx context.Context, path string, recursive bool) error {
 	if recursive {
 		return os.RemoveAll(iopath.Join(f.basepath, path))

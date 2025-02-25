@@ -44,6 +44,7 @@ func NewModelxCmd() *cobra.Command {
 	cmd.AddCommand(NewPullCmd())
 	cmd.AddCommand(NewVendorCmd())
 	cmd.AddCommand(NewVerifyCmd())
+	cmd.AddCommand(NewCopyCmd())
 	return cmd
 }
 
