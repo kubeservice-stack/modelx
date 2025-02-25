@@ -72,6 +72,10 @@ func CopyModel(ctx context.Context, refTo string, refFrom string) error {
 		return err
 	}
 
+	if referenceTo.Registry != referenceFrom.Registry {
+		return fmt.Errorf("Registry from %s must equal registry to %s", referenceFrom.Registry, referenceTo.Registry)
+	}
+
 	// TODO: Add new annotations from model config
 
 	fmt.Printf("Copying %s to %s \n", referenceTo.String(), referenceFrom.String())
