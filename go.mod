@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/KimMachineGun/automemlimit v0.7.1
-	github.com/aws/aws-sdk-go-v2 v1.36.2
+	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.7
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.60
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.63
