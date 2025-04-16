@@ -42,12 +42,11 @@ jobs:
       - name: go.mod
         run: go mod tidy && git diff --exit-code
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6.5.2
+        uses: golangci/golangci-lint-action@v7
         with:
-          version: v1.64.5
+          version: v2.0.2
           skip-cache: true
           skip-save-cache: true
-          args: --timeout 10m0s --go ${{ env.golang-version }}
 
   check-format:
     runs-on: ubuntu-latest
