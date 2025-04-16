@@ -24,7 +24,7 @@ package tools
 import (
 	_ "github.com/bwplotka/mdox"
 	_ "github.com/fzipp/gocyclo/cmd/gocyclo"
-	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
+	_ "github.com/golangci/golangci-lint/v2/cmd/golangci-lint"
 	_ "github.com/securego/gosec/v2/cmd/gosec"
 	_ "github.com/swaggo/swag/cmd/swag"
 )
