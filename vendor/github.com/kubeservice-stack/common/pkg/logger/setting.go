@@ -112,8 +112,8 @@ func newLogger(logFilename string, cfg config.Logging) error {
 	}
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = SimpleTimeEncoder
-	switch {
-	case logFilename == accessLogFileName:
+	switch logFilename {
+	case accessLogFileName:
 		encoderConfig.EncodeLevel = SimpleAccessLevelEncoder
 	default:
 		encoderConfig.EncodeLevel = SimpleLevelEncoder
@@ -123,10 +123,10 @@ func newLogger(logFilename string, cfg config.Logging) error {
 		zapcore.NewConsoleEncoder(encoderConfig),
 		w,
 		RunningAtomicLevel)
-	switch {
-	case logFilename == accessLogFileName:
+	switch logFilename {
+	case accessLogFileName:
 		accessLogger.Store(zap.New(core))
-	case logFilename == crashLogFileName:
+	case crashLogFileName:
 		crashLogger.Store(zap.New(core))
 	default:
 		mediaLogger.Store(zap.New(core))

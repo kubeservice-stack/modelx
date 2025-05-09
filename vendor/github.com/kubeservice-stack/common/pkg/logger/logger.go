@@ -79,10 +79,10 @@ func (l *Logger) getInitializedOrDefaultLogger() *zap.Logger {
 		return l.logger
 	}
 	var item interface{}
-	switch {
-	case l.module == HTTPModule:
+	switch l.module {
+	case HTTPModule:
 		item = accessLogger.Load()
-	case l.module == CrashModule:
+	case CrashModule:
 		item = crashLogger.Load()
 	default:
 		item = mediaLogger.Load()
