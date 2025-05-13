@@ -19,6 +19,7 @@ package metrics
 import (
 	"fmt"
 	"io"
+	"strings"
 	"sync"
 	"time"
 
@@ -83,6 +84,18 @@ func NewTallyScope(cfg *config.Metrics) *TallyScope {
 // 进程失败销毁
 func (t *TallyScope) Destroy() error {
 	return t.Closer.Close()
+}
+
+func CustomTallyScopeConfig(name string) *config.Metrics {
+	r := strings.NewReplacer(".", "_", "-", "_") // prometheus不支持「-」和「.」
+	l := &config.Metrics{
+		FlushInterval:          5,
+		EnableGoRuntimeMetrics: true,
+		MetricsPrefix:          r.Replace(name),
+		MetricsTags:            map[string]string{},
+	}
+	return l
+
 }
 
 func init() {

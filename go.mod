@@ -18,7 +18,7 @@ require (
 	github.com/go-logr/logr v1.4.2
 	github.com/go-logr/stdr v1.2.2
 	github.com/jedib0t/go-pretty/v6 v6.6.7
-	github.com/kubeservice-stack/common v1.9.0
+	github.com/kubeservice-stack/common v1.9.1
 	github.com/mholt/archiver/v4 v4.0.0-alpha.9
 	github.com/oklog/run v1.1.0
 	github.com/opencontainers/go-digest v1.0.0
