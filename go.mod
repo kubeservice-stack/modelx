@@ -15,7 +15,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-oidc/v3 v3.14.1
 	github.com/gin-gonic/gin v1.10.1
-	github.com/go-logr/logr v1.4.2
+	github.com/go-logr/logr v1.4.3
 	github.com/go-logr/stdr v1.2.2
 	github.com/jedib0t/go-pretty/v6 v6.6.7
 	github.com/kubeservice-stack/common v1.9.1
