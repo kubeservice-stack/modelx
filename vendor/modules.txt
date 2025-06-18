@@ -47,7 +47,7 @@ github.com/aws/aws-sdk-go-v2/internal/timeconv
 ## explicit; go 1.22
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream/eventstreamapi
-# github.com/aws/aws-sdk-go-v2/config v1.29.16
+# github.com/aws/aws-sdk-go-v2/config v1.29.17
 ## explicit; go 1.22
 github.com/aws/aws-sdk-go-v2/config
 # github.com/aws/aws-sdk-go-v2/credentials v1.17.70
