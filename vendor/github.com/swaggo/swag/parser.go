@@ -182,6 +182,9 @@ type Parser struct {
 
 	// ParseFuncBody whether swag should parse api info inside of funcs
 	ParseFuncBody bool
+
+	// UseStructName Dont use those ugly full-path names when using dependency flag
+	UseStructName bool
 }
 
 // FieldParserFactory create FieldParser.
@@ -258,6 +261,13 @@ func SetParseDependency(parseDependency int) func(*Parser) {
 		if p.packages != nil {
 			p.packages.parseDependency = p.ParseDependency
 		}
+	}
+}
+
+// SetUseStructName sets whether to strip the full-path definition name.
+func SetUseStructName(useStructName bool) func(*Parser) {
+	return func(p *Parser) {
+		p.UseStructName = useStructName
 	}
 }
 
@@ -536,8 +546,7 @@ func parseGeneralAPIInfo(parser *Parser, comments []string) error {
 			setSwaggerInfo(parser.swagger, attr, value)
 		case descriptionAttr:
 			if previousAttribute == attribute {
-				parser.swagger.Info.Description += "\n" + value
-
+				parser.swagger.Info.Description = AppendDescription(parser.swagger.Info.Description, value)
 				continue
 			}
 
@@ -1049,6 +1058,9 @@ func getFuncDoc(decl any) (*ast.CommentGroup, bool) {
 		if astDecl.Tok != token.VAR {
 			return nil, false
 		}
+		if len(astDecl.Specs) == 0 {
+			return nil, false
+		}
 		varSpec, ok := astDecl.Specs[0].(*ast.ValueSpec)
 		if !ok || len(varSpec.Values) != 1 {
 			return nil, false
@@ -1056,8 +1068,11 @@ func getFuncDoc(decl any) (*ast.CommentGroup, bool) {
 		_, ok = getFuncDoc(varSpec)
 		return astDecl.Doc, ok
 	case *ast.ValueSpec:
+		if len(astDecl.Values) == 0 {
+			return nil, false
+		}
 		value, ok := astDecl.Values[0].(*ast.Ident)
-		if !ok || value == nil {
+		if !ok || value == nil || value.Obj == nil || value.Obj.Decl == nil {
 			return nil, false
 		}
 		_, ok = getFuncDoc(value.Obj.Decl)
@@ -1324,6 +1339,16 @@ func (parser *Parser) ParseDefinition(typeSpecDef *TypeSpecDef) (*Schema, error)
 			ErrRecursiveParseStruct
 	}
 
+	if parser.UseStructName {
+		schemaName := strings.Split(typeSpecDef.SchemaName, ".")
+		if len(schemaName) > 1 {
+			typeSpecDef.SchemaName = schemaName[len(schemaName)-1]
+			typeName = typeSpecDef.SchemaName
+		} else {
+			parser.debug.Printf("Could not strip type name of %s", typeName)
+		}
+	}
+
 	parser.structStack = append(parser.structStack, typeSpecDef)
 
 	parser.debug.Printf("Generating %s", typeName)
@@ -1348,9 +1373,9 @@ func (parser *Parser) ParseDefinition(typeSpecDef *TypeSpecDef) (*Schema, error)
 		for _, value := range typeSpecDef.Enums {
 			definition.Enum = append(definition.Enum, value.Value)
 			varnames = append(varnames, value.key)
+			enumDescriptions = append(enumDescriptions, value.Comment)
 			if len(value.Comment) > 0 {
 				enumComments[value.key] = value.Comment
-				enumDescriptions = append(enumDescriptions, value.Comment)
 			}
 		}
 		if definition.Extensions == nil {
