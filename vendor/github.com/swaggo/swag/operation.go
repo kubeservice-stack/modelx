@@ -204,7 +204,7 @@ func (operation *Operation) ParseDescriptionComment(lineRemainder string) {
 		return
 	}
 
-	operation.Description += "\n" + lineRemainder
+	operation.Description = AppendDescription(operation.Description, lineRemainder)
 }
 
 // ParseMetadata parse metadata.
@@ -713,7 +713,7 @@ func parseMimeTypeList(mimeTypeList string, typeList *[]string, format string) e
 	return nil
 }
 
-var routerPattern = regexp.MustCompile(`^(/[\w./\-{}\(\)+:$]*)[[:blank:]]+\[(\w+)]`)
+var routerPattern = regexp.MustCompile(`^(/[\w./\-{}\(\)+:$~]*)[[:blank:]]+\[(\w+)]`)
 
 // ParseRouterComment parses comment for given `router` comment string.
 func (operation *Operation) ParseRouterComment(commentLine string, deprecated bool) error {
