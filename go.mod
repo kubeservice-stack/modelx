@@ -17,7 +17,7 @@ require (
 	github.com/gin-gonic/gin v1.10.1
 	github.com/go-logr/logr v1.4.3
 	github.com/go-logr/stdr v1.2.2
-	github.com/jedib0t/go-pretty/v6 v6.6.7
+	github.com/jedib0t/go-pretty/v6 v6.6.8
 	github.com/kubeservice-stack/common v1.9.1
 	github.com/mholt/archiver/v4 v4.0.0-alpha.9
 	github.com/oklog/run v1.2.0
