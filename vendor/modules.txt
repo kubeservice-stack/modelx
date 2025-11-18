@@ -367,7 +367,7 @@ github.com/hashicorp/golang-lru/v2/simplelru
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
-# github.com/jedib0t/go-pretty/v6 v6.7.1
+# github.com/jedib0t/go-pretty/v6 v6.7.2
 ## explicit; go 1.18
 github.com/jedib0t/go-pretty/v6/table
 github.com/jedib0t/go-pretty/v6/text
