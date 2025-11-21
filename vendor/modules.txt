@@ -233,7 +233,7 @@ github.com/cloudwego/base64x/internal/native
 github.com/cloudwego/base64x/internal/native/avx2
 github.com/cloudwego/base64x/internal/native/sse
 github.com/cloudwego/base64x/internal/rt
-# github.com/coreos/go-oidc/v3 v3.16.0
+# github.com/coreos/go-oidc/v3 v3.17.0
 ## explicit; go 1.24.0
 github.com/coreos/go-oidc/v3/oidc
 # github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
