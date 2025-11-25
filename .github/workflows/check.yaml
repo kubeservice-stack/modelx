@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check Documentation formatting and links
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Import environment variables from file
       run: cat ".github/env" >> $GITHUB_ENV
     - uses: actions/setup-go@v6
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Golang linter
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Import environment variables from file
         run: cat ".github/env" >> $GITHUB_ENV
       - uses: actions/setup-go@v6
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check format
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Import environment variables from file
       run: cat ".github/env" >> $GITHUB_ENV
     - uses: actions/setup-go@v6
@@ -70,7 +70,7 @@ jobs:
           - macos-latest
     name: Build binary
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Import environment variables from file
       run: cat ".github/env" >> $GITHUB_ENV
     - uses: actions/setup-go@v6
