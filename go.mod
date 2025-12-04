@@ -23,7 +23,7 @@ require (
 	github.com/oklog/run v1.2.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/satori/go.uuid v1.2.0
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
 	github.com/swaggo/swag v1.16.6
 	go.uber.org/automaxprocs v1.6.0
