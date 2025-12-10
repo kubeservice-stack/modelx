@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.41.0
 	github.com/aws/aws-sdk-go-v2/config v1.32.5
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.5
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.13
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.15
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.93.2
 	github.com/aws/smithy-go v1.24.0
 	github.com/blang/semver/v4 v4.0.0
