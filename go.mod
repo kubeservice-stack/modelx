@@ -7,9 +7,9 @@ toolchain go1.24.1
 require (
 	github.com/KimMachineGun/automemlimit v0.7.5
 	github.com/aws/aws-sdk-go-v2 v1.41.1
-	github.com/aws/aws-sdk-go-v2/config v1.32.8
+	github.com/aws/aws-sdk-go-v2/config v1.32.9
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.9
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.22.0
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.22.2
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.96.0
 	github.com/aws/smithy-go v1.24.0
 	github.com/blang/semver/v4 v4.0.0
