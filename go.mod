@@ -26,7 +26,7 @@ require (
 	github.com/swaggo/swag v1.16.6
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/zap v1.27.1
-	golang.org/x/sync v0.19.0
+	golang.org/x/sync v0.20.0
 	golang.org/x/term v0.40.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.33.4
