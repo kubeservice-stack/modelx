@@ -18,11 +18,11 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"reflect"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type (
@@ -73,9 +73,7 @@ func SliceRandList(min, max int) []int {
 		min, max = max, min
 	}
 	length := max - min + 1
-	t0 := time.Now()
-	r := rand.New(rand.NewSource(int64(t0.Nanosecond())))
-	list := r.Perm(length)
+	list := rand.Perm(length)
 	for index := range list {
 		list[index] += min
 	}
@@ -138,18 +136,23 @@ func SliceRange(start, end, step int64) (intslice []int64) {
 	return
 }
 
+// SliceShuffle shuffles a slice using Fisher-Yates algorithm.
+// NOTE: This uses math/rand which is not cryptographically secure.
+// Do not use for security-sensitive shuffling (e.g., token generation).
 func SliceShuffle(slice []interface{}) []interface{} {
-	for i := 0; i < len(slice); i++ {
-		a := rand.Intn(len(slice))
-		b := rand.Intn(len(slice))
-		slice[a], slice[b] = slice[b], slice[a]
+	n := len(slice)
+	for i := n - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		slice[i], slice[j] = slice[j], slice[i]
 	}
 	return slice
 }
 
 func InterfacesToStrings(items []interface{}) (s []string) {
 	for _, item := range items {
-		s = append(s, item.(string))
+		if v, ok := item.(string); ok {
+			s = append(s, v)
+		}
 	}
 	return s
 }
@@ -161,7 +164,11 @@ func ToStringDict(items []interface{}, key string) ([]string, error) {
 		if !ok {
 			return nil, errors.New("interface{} to map[string]string err")
 		}
-		ret = append(ret, it[key].(string))
+		v, ok := it[key].(string)
+		if !ok {
+			return nil, fmt.Errorf("key %q value is not a string", key)
+		}
+		ret = append(ret, v)
 	}
 	return ret, nil
 }
@@ -183,7 +190,9 @@ func ToStrings(arr []interface{}) []string {
 	var ret []string
 	for _, value := range arr {
 		if value != nil {
-			ret = append(ret, value.(string))
+			if v, ok := value.(string); ok {
+				ret = append(ret, v)
+			}
 		}
 	}
 	return ret
