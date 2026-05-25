@@ -22,6 +22,7 @@ import (
 	"strconv"
 )
 
+// Keys returns all keys from the map as a slice.
 func Keys(maps map[string]interface{}) []string {
 	var keys []string
 	for k := range maps {
@@ -30,6 +31,7 @@ func Keys(maps map[string]interface{}) []string {
 	return keys
 }
 
+// Values returns all values from the map as a slice.
 func Values(maps map[string]interface{}) []interface{} {
 	var values []interface{}
 	for _, v := range maps {
@@ -121,7 +123,9 @@ func ToMapStrings(param map[string]interface{}) map[string]string {
 	}
 
 	for key, value := range param {
-		ret[key] = value.(string)
+		if v, ok := value.(string); ok {
+			ret[key] = v
+		}
 	}
 	return ret
 }
@@ -133,8 +137,8 @@ func Strings(param []interface{}) map[string]bool {
 	}
 
 	for _, value := range param {
-		if value.(string) != "" {
-			ret[value.(string)] = true
+		if v, ok := value.(string); ok && v != "" {
+			ret[v] = true
 		}
 	}
 

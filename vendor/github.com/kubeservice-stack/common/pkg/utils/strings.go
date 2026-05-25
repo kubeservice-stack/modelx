@@ -26,12 +26,12 @@ func GetBetweenStr(str, start, end string) string {
 	if n == -1 {
 		n = 0
 	}
-	str = string([]byte(str)[n:])
+	str = str[n:]
 	m := strings.Index(str, end)
 	if m == -1 {
 		m = len(str)
 	}
-	str = string([]byte(str)[:m])
+	str = str[:m]
 	return str
 }
 
@@ -65,6 +65,10 @@ func Substr(str string, start, length int) string {
 	return string(rs[start:end])
 }
 
+// String2Bytes converts a string to a byte slice without memory allocation.
+// WARNING: the returned slice shares the underlying memory with the string.
+// Do NOT modify the returned slice, as it may corrupt the original string.
+// For safe conversion, use []byte(s) instead.
 func String2Bytes(s string) []byte {
 	var ret []byte
 	if len(s) == 0 {
@@ -73,6 +77,10 @@ func String2Bytes(s string) []byte {
 	return unsafe.Slice(unsafe.StringData(s), len(s))
 }
 
+// Bytes2String converts a byte slice to a string without memory allocation.
+// WARNING: the returned string shares the underlying memory with the byte slice.
+// Do NOT modify the input slice while the returned string is in use.
+// For safe conversion, use string(b) instead.
 func Bytes2String(b []byte) string {
 	if len(b) == 0 {
 		return ""
