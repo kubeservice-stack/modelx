@@ -1104,3 +1104,4 @@ sigs.k8s.io/structured-merge-diff/v6/value
 ## explicit; go 1.22
 sigs.k8s.io/yaml
 # google.golang.org/grpc => google.golang.org/grpc v1.26.0
+# github.com/charmbracelet/glamour => github.com/charmbracelet/glamour v0.10.0
